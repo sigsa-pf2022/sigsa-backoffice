@@ -1,0 +1,12 @@
+@import './theme/buttons.scss';
+@import './theme/colors.scss';
+@import '~bootstrap-icons/font/bootstrap-icons.css';
+
+.skeleton-container {
+  margin-left: 216px;
+  margin-top: 56px;
+}
+
+.clickable {
+  cursor: pointer;
+}

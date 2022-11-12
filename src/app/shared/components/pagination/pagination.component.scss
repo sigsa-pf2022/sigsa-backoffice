@@ -1,0 +1,16 @@
+.active {
+  .page-link {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+  }
+}
+.page-link {
+  color: var(--color-primary);
+}
+
+.page-item.disabled {
+  .page-link {
+    color: gray;
+  }
+}

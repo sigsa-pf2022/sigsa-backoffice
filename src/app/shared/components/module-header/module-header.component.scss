@@ -1,0 +1,20 @@
+.mh {
+  &__content {
+    display: flex;
+    padding: 16px;
+    gap: 16px;
+    flex-direction: column;
+    &__title {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      align-items: center;
+      h2{
+        margin-bottom: 0;
+      }
+    }
+    &__search{
+        display: flex;
+    }
+  }
+}
