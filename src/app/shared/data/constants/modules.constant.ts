@@ -17,6 +17,16 @@ export const MODULES = [
         value: 'meds_type',
         route: 'modules/meds/type',
       },
+      {
+        name: 'Formas',
+        value: 'meds_form',
+        route: 'modules/meds/form/list',
+      },
+      {
+        name: 'Unidad de Medida',
+        value: 'meds_measurement',
+        route: 'modules/meds/measurement/list',
+      },
     ],
   },
   {

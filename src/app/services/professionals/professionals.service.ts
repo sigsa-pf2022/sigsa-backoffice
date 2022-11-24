@@ -14,7 +14,7 @@ export class ProfessionalsService {
   }
 
   getProfessionalsSpecializations(page:number): Promise<any> {
-    return firstValueFrom(this.http.get<any>(`${environment.apiUrl}/professionals/specializations?page=${page}`));
+    return firstValueFrom(this.http.get<any>(`${environment.apiUrl}/professionals/specializations?page=${page}&take=3`));
   }
 
   getProfessionalsSpecializationById(id: number): Promise<any[]> {
