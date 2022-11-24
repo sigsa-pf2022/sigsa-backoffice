@@ -10,6 +10,10 @@ import { UsersComponent } from './users/users/users.component';
 import { ProfessionalsSpecializationsCreateComponent } from './professionals/professionals-specializations-create/professionals-specializations-create.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { MedsFormListComponent } from './meds/meds-form/meds-form-list/meds-form-list.component';
+import { MedsFormCreateComponent } from './meds/meds-form/meds-form-create/meds-form-create.component';
+import { MedsMeasurementListComponent } from './meds/meds-measurement/meds-measurement-list/meds-measurement-list.component';
+import { MedsMeasurementCreateComponent } from './meds/meds-measurement/meds-measurement-create/meds-measurement-create.component';
 
 const routes: Routes = [
   {
@@ -23,6 +27,40 @@ const routes: Routes = [
       {
         path: 'list',
         component: MedsComponent,
+      },
+      {
+        path: 'form',
+        children:[
+          {
+            path: 'list',
+            component: MedsFormListComponent,
+          },
+          {
+            path: 'create',
+            component: MedsFormCreateComponent,
+          },
+          {
+            path: 'edit/:id',
+            component: MedsFormCreateComponent,
+          },
+        ],
+      },
+      {
+        path: 'measurement',
+        children:[
+          {
+            path: 'list',
+            component: MedsMeasurementListComponent,
+          },
+          {
+            path: 'create',
+            component: MedsMeasurementCreateComponent,
+          },
+          {
+            path: 'edit/:id',
+            component: MedsMeasurementCreateComponent,
+          },
+        ],
       },
     ],
   },
@@ -70,6 +108,11 @@ const routes: Routes = [
     ProfessionalsSpecializationsComponent,
     UsersComponent,
     ProfessionalsSpecializationsCreateComponent,
+    MedsFormListComponent,
+    MedsFormCreateComponent,
+    MedsMeasurementListComponent,
+    MedsMeasurementCreateComponent,
+
   ],
   imports: [
     RouterModule.forChild(routes),
