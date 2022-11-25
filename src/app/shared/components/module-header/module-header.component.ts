@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -7,9 +7,14 @@ import { Router } from '@angular/router';
     <div class="mh__content">
       <div class="mh__content__title">
         <h2>{{ title }}</h2>
-        <button class="btn btn-success" (click)="this.goToCreate()">
-          <i class="bi bi-plus fs-4"></i>
-        </button>
+        <div class="d-flex gap-3">
+          <button class="btn" (click)="this.toggleFilters()">
+            <i class="bi bi-funnel fs-4"></i>
+          </button>
+          <button class="btn btn-success" (click)="this.goToCreate()">
+            <i class="bi bi-plus fs-4"></i>
+          </button>
+        </div>
       </div>
     </div>
     <ng-content></ng-content>
@@ -19,11 +24,17 @@ import { Router } from '@angular/router';
 export class ModuleHeaderComponent implements OnInit {
   @Input() title: string = '';
   @Input() route: string = '';
+  @Output() showFilters = new EventEmitter<boolean>();
+  showF = true;
   constructor(private router: Router) {}
 
   ngOnInit(): void {}
 
-  goToCreate(){
-    this.router.navigateByUrl(this.route)
+  goToCreate() {
+    this.router.navigateByUrl(this.route);
+  }
+  toggleFilters() {
+    this.showF = !this.showF;
+    this.showFilters.emit(this.showF);
   }
 }

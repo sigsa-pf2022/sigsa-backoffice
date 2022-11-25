@@ -1,17 +1,34 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 
 @Component({
   selector: 'app-pagination',
   template: `
-    <nav *ngIf="this.pages">
+    <nav *ngIf="this.pages.length > 0">
       <ul class="pagination justify-content-center">
         <li class="page-item" [class.disabled]="pageSelected === 0">
           <a class="page-link clickable" (click)="previousPage()">Previous</a>
         </li>
-        <li class="page-item" [class.active]="page === pageSelected" *ngFor="let page of this.pages">
-          <a class="page-link clickable" (click)="changePage(page)">{{ page + 1 }}</a>
+        <li
+          class="page-item"
+          [class.active]="page === pageSelected"
+          *ngFor="let page of this.pages"
+        >
+          <a class="page-link clickable" (click)="changePage(page)">{{
+            page + 1
+          }}</a>
         </li>
-        <li class="page-item" [class.disabled]="pageSelected === this.pages.length - 1">
+        <li
+          class="page-item"
+          [class.disabled]="pageSelected === this.pages.length - 1 "
+        >
           <a class="page-link clickable" (click)="nextPage()">Next</a>
         </li>
       </ul>
@@ -30,11 +47,11 @@ export class PaginationComponent implements OnInit, OnChanges {
   ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges) {
-    if (!this.pages && Number(changes['totalItems'].currentValue) > 0) {
-      this.pages = Array(Math.ceil(Number(changes['totalItems'].currentValue / 3)))
-        .fill(0)
-        .map((x, i) => i);
-    }
+    this.pages = Array(
+      Math.ceil(Number(changes['totalItems'].currentValue / 10))
+    )
+      .fill(0)
+      .map((x, i) => i);
   }
 
   changePage(page: number) {
