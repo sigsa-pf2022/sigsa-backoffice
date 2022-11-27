@@ -15,6 +15,10 @@ export class ProfessionalsService {
     );
   }
 
+  getMonthlyProfessionalsQuantity(): Promise<any[]>{
+    return firstValueFrom(this.http.get<any[]>(`${environment.apiUrl}/professionals/monthly-quantity`));
+  }
+
   getProfessionalsSpecializations(
     page: number,
     deleted: boolean,

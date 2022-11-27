@@ -12,4 +12,8 @@ export class UsersService {
   getUsers(): Promise<any[]> {
     return firstValueFrom(this.http.get<any[]>(`${environment.apiUrl}/users/all`));
   }
+  
+  getMonthlyUserQuantity(): Promise<any[]>{
+    return firstValueFrom(this.http.get<any[]>(`${environment.apiUrl}/users/monthly-quantity`));
+  }
 }
