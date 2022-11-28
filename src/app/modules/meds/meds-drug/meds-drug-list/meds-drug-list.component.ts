@@ -5,9 +5,9 @@ import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import { MedsService } from 'src/app/services/meds/meds.service';
 
 @Component({
-  selector: 'app-meds-measurement-list',
+  selector: 'app-meds-drug-list',
   template: `
-        <div class="skeleton-container">
+    <div class="skeleton-container">
       <app-module-header title="Tipos" [route]="this.route"></app-module-header>
       <div class="layout">
         <div class="filter">
@@ -38,25 +38,25 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let measurement of this.medsMeasurements">
-                <th scope="row">{{ measurement.id }}</th>
-                <td>{{ measurement.name }}</td>
-                <td [class.text-danger]="measurement.deleted" [class.text-success]="!measurement.deleted">
-                  {{ measurement.deleted ? 'Deshabilitado' : 'Habilitado' }}
+              <tr *ngFor="let drug of this.medsDrugs">
+                <th scope="row">{{ drug.id }}</th>
+                <td>{{ drug.name }}</td>
+                <td [class.text-danger]="drug.deleted" [class.text-success]="!drug.deleted">
+                  {{ drug.deleted ? 'Deshabilitado' : 'Habilitado' }}
                 </td>
                 <td>
                   <button
                     class="btn btn-warning me-1"
-                    (click)="edit(measurement.id)"
-                    [disabled]="measurement.deleted"
+                    (click)="edit(drug.id)"
+                    [disabled]="drug.deleted"
                   >
                     <i class="bi bi-pencil"></i>
                   </button>
                   <button
-                    [disabled]="measurement.deleted"
+                    [disabled]="drug.deleted"
                     class="btn btn-danger"
                     [swal]="deleteSwal"
-                    (confirm)="remove(measurement.id)"
+                    (confirm)="remove(drug.id)"
                   >
                     <i class="bi bi-trash"></i>
                   </button>
@@ -67,61 +67,61 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                     icon="question"
                     [focusCancel]="true"
                     confirmButtonColor="red"
-                    text="Deshabilitar {{ measurement.name }}?"
+                    text="Deshabilitar {{ drug.name }}?"
                   ></swal>
                   <swal
                     #successSwal
                     text="Especializacion deshabilitada correctamente"
                     icon="success"
-                    (confirm)="this.getMedsMeasurements()"
+                    (confirm)="this.getMedsDrugs()"
                   >
                   </swal>
                 </td>
               </tr>
             </tbody>
           </table>
-          <h5 *ngIf="this.medsMeasurements.length === 0">
-            No se encontraron unidades de medida con los parametros ingresados
+          <h5 *ngIf="this.medsDrugs.length === 0">
+            No se encontraron drogas con los parametros ingresados
           </h5>
         </div>
       </div>
     </div>
     <app-pagination [totalItems]="this.totalItems" (pageChanged)="changed($event)"></app-pagination>
   `,
-  styleUrls: ['./meds-measurement-list.component.scss']
+  styleUrls: ['./meds-drug-list.component.scss']
 })
-export class MedsMeasurementListComponent implements OnInit {
+export class MedsDrugListComponent implements OnInit {
   @ViewChild('successSwal') public readonly sucessSwal!: SwalComponent;
   form = this.fb.group({
     name: '',
     deleted: false,
   });
-  medsMeasurements: any[] = [];
+  medsDrugs: any[] = [];
   opened = false;
   totalItems = 0;
-  route = `/modules/meds/measurement/create`;
+  route = `/modules/meds/drug/create`;
 
   constructor(private medsService: MedsService, private router: Router, private fb: FormBuilder) {}
 
   ngOnInit(): void {
-    this.getMedsMeasurements();
+    this.getMedsDrugs();
     this.form.valueChanges.subscribe(() => this.filter());
   }
   changed(page: any) {
-    this.getMedsMeasurements(page);
+    this.getMedsDrugs(page);
   }
-  async getMedsMeasurements(page: number = 0) {
-    const res = await this.medsService.getMedsMeasurements(page);
-    this.medsMeasurements = res.data;
+  async getMedsDrugs(page: number = 0) {
+    const res = await this.medsService.getMedsDrugs(page);
+    this.medsDrugs = res.data;
     this.totalItems = res.count;
   }
 
   edit(id: number) {
-    this.router.navigateByUrl(`modules/meds/measurement/edit/${id}`);
+    this.router.navigateByUrl(`modules/meds/drug/edit/${id}`);
   }
 
   remove(id: number) {
-    this.medsService.deleteMedsMeasurement(id).then(() => this.sucessSwal.fire());
+    this.medsService.deleteMedsDrug(id).then(() => this.sucessSwal.fire());
   }
 
   // recover(id: number) {
@@ -143,5 +143,4 @@ export class MedsMeasurementListComponent implements OnInit {
   // toggle(value: boolean) {
   //   this.showFilters = value;
   // }
-
 }

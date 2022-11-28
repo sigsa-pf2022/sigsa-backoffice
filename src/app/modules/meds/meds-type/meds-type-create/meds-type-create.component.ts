@@ -4,16 +4,19 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import { MedsService } from 'src/app/services/meds/meds.service';
 
-
 @Component({
-  selector: 'app-meds-measurement-create',
+  selector: 'app-meds-type-create',
   template: `
     <div class="skeleton-container">
-      <h3 class="pt-4">{{ this.editMode ? 'Editar' : 'Nueva' }} unidad de medida </h3>
+      <h3 class="pt-4">{{ this.editMode ? 'Editar' : 'Nueva' }} Tipo </h3>
       <form class="me-3 mt-3" [formGroup]="this.form" (ngSubmit)="onSubmit()">
         <div class="mb-3">
           <label for="name" class="form-label">Nombre</label>
           <input type="text" class="form-control" formControlName="name" id="name" />
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Descripción</label>
+          <textarea type="text" class="form-control" formControlName="description" id="description" rows="3"></textarea>
         </div>
         <div>
           <button class="btn btn-success me-3" [disabled]="!this.form.valid" type="submit">Confirmar</button>
@@ -30,14 +33,14 @@ import { MedsService } from 'src/app/services/meds/meds.service';
     </swal>
     <swal #errorSwal icon="error"> </swal>
   `,
-  styleUrls: ['./meds-measurement-create.component.scss']
+  styleUrls: ['./meds-type-create.component.scss']
 })
-export class MedsMeasurementCreateComponent implements OnInit {
+export class MedsTypeCreateComponent implements OnInit {
   @ViewChild('successSwal') public readonly sucessSwal!: SwalComponent;
   @ViewChild('errorSwal') public readonly errorSwal!: SwalComponent;
   editMode = false;
   errorText: string = '';
-  medsMeasurementToUpdate: any;
+  medsTypeToUpdate: any;
   form = this.fb.group({
     name: ['', Validators.required],
     description: '',
@@ -52,12 +55,12 @@ export class MedsMeasurementCreateComponent implements OnInit {
   ngOnInit(): void {
     const itemId = this.route.snapshot.params['id'];
     this.editMode = itemId ? true : false;
-    if (this.editMode) this.setMeasurement(itemId);
+    if (this.editMode) this.setType(itemId);
   }
 
-  async setMeasurement(itemId: number) {
-    this.medsMeasurementToUpdate = await this.medsService.getMedsMeasurementById(itemId);
-    this.form.patchValue(this.medsMeasurementToUpdate);
+  async setType(itemId: number) {
+    this.medsTypeToUpdate = await this.medsService.getMedsTypeById(itemId);
+    this.form.patchValue(this.medsTypeToUpdate);
   }
 
   onSubmit() {
@@ -66,7 +69,7 @@ export class MedsMeasurementCreateComponent implements OnInit {
 
   update() {
     this.medsService
-      .updateMedsMeasurement(this.medsMeasurementToUpdate.id, this.form.value)
+      .updateMedsType(this.medsTypeToUpdate.id, this.form.value)
       .then(() => this.sucessSwal.fire())
       .catch(({error}: {error:any} ) => {
         this.errorSwal.update({ text: error.message });
@@ -76,7 +79,7 @@ export class MedsMeasurementCreateComponent implements OnInit {
 
   create() {
     this.medsService
-      .createMedsMeasurement(this.form.value)
+      .createMedsType(this.form.value)
       .then(() => this.sucessSwal.fire())
       .catch(({error}: {error:any}) => {
         this.errorSwal.update({ text: error.message });
@@ -85,7 +88,7 @@ export class MedsMeasurementCreateComponent implements OnInit {
   }
 
   navigate() {
-    this.router.navigateByUrl('/modules/meds/measurement/list');
+    this.router.navigateByUrl('/modules/meds/type/list');
   }
 
 }
