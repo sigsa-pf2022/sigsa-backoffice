@@ -9,8 +9,8 @@ import { environment } from 'src/environments/environment';
 export class UsersService {
   constructor(private http: HttpClient) {}
 
-  getUsers(): Promise<any[]> {
-    return firstValueFrom(this.http.get<any[]>(`${environment.apiUrl}/users/all`));
+  getUsers(page:number): Promise<any> {
+    return firstValueFrom(this.http.get<any>(`${environment.apiUrl}/users/all?page=${page}&take=10`));
   }
   
   getMonthlyUserQuantity(): Promise<any[]>{

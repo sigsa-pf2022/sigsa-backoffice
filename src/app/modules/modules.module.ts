@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '../shared/shared.module';
 import { RouterModule, Routes } from '@angular/router';
-import { MedsComponent } from './meds/meds/meds.component';
 import { ProfessionalsComponent } from './professionals/professionals/professionals.component';
 import { ProfessionalsSpecializationsComponent } from './professionals/professionals-specializations/professionals-specializations.component';
 import { UsersComponent } from './users/users/users.component';
@@ -17,6 +16,8 @@ import { MedsTypeCreateComponent } from './meds/meds-type/meds-type-create/meds-
 import { MedsTypeListComponent } from './meds/meds-type/meds-type-list/meds-type-list.component';
 import { MedsDrugListComponent } from './meds/meds-drug/meds-drug-list/meds-drug-list.component';
 import { MedsDrugCreateComponent } from './meds/meds-drug/meds-drug-create/meds-drug-create.component';
+import { MedsListComponent } from './meds/meds/meds-list/meds-list.component';
+import { MedsCreateComponent } from './meds/meds/meds-create/meds-create.component';
 
 const routes: Routes = [
   {
@@ -29,7 +30,15 @@ const routes: Routes = [
     children: [
       {
         path: 'list',
-        component: MedsComponent,
+        component: MedsListComponent,
+      },
+      {
+        path: 'create',
+        component: MedsCreateComponent,
+      },
+      {
+        path: 'edit/:id',
+        component: MedsCreateComponent,
       },
       {
         path: 'form',
@@ -139,7 +148,8 @@ const routes: Routes = [
 ];
 @NgModule({
   declarations: [
-    MedsComponent,
+    MedsCreateComponent,
+    MedsListComponent,
     ProfessionalsComponent,
     ProfessionalsSpecializationsComponent,
     UsersComponent,

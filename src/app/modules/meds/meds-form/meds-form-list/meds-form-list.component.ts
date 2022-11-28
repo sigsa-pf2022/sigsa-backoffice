@@ -8,7 +8,10 @@ import { MedsService } from 'src/app/services/meds/meds.service';
   selector: 'app-meds-form-list',
   template: `
     <div class="skeleton-container">
-      <app-module-header title="Formas" [route]="this.route"></app-module-header>
+      <app-module-header
+        title="Formas"
+        [route]="this.route"
+      ></app-module-header>
       <div class="layout">
         <div class="filter">
           <div class="mt-3">
@@ -17,12 +20,25 @@ import { MedsService } from 'src/app/services/meds/meds.service';
           <form class="me-3 mt-3" [formGroup]="this.form" (ngSubmit)="filter()">
             <div class="mb-3">
               <label for="name" class="form-label">Nombre</label>
-              <input type="text" class="form-control" formControlName="name" id="name" />
+              <input
+                type="text"
+                class="form-control"
+                formControlName="name"
+                id="name"
+              />
             </div>
             <div class="mb-3">
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" formControlName="deleted" value="" id="deleted" />
-                <label class="form-check-label" for="deleted"> Deshabilitado </label>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  formControlName="deleted"
+                  value=""
+                  id="deleted"
+                />
+                <label class="form-check-label" for="deleted">
+                  Deshabilitado
+                </label>
               </div>
             </div>
           </form>
@@ -33,13 +49,18 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               <tr>
                 <th scope="col">ID</th>
                 <th scope="col">Nombre</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Acciones</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let forms of this.medsForms">
                 <th scope="row">{{ forms.id }}</th>
                 <td>{{ forms.name }}</td>
-                <td [class.text-danger]="forms.deleted" [class.text-success]="!forms.deleted">
+                <td
+                  [class.text-danger]="forms.deleted"
+                  [class.text-success]="!forms.deleted"
+                >
                   {{ forms.deleted ? 'Deshabilitado' : 'Habilitado' }}
                 </td>
                 <td>
@@ -69,7 +90,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                   ></swal>
                   <swal
                     #successSwal
-                    text="Especializacion deshabilitada correctamente"
+                    text="Forma de medicamento deshabilitada correctamente"
                     icon="success"
                     (confirm)="this.getMedsForms()"
                   >
@@ -78,15 +99,20 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               </tr>
             </tbody>
           </table>
+          <h5 *ngIf="this.medsForms.length === 0">
+            No se encontraron formas de medicamentos con los parametros ingresados
+          </h5>
         </div>
       </div>
     </div>
-    <app-pagination [totalItems]="this.totalItems" (pageChanged)="changed($event)"></app-pagination>
+    <app-pagination
+      [totalItems]="this.totalItems"
+      (pageChanged)="changed($event)"
+    ></app-pagination>
   `,
-  styleUrls: ['./meds-form-list.component.scss']
+  styleUrls: ['./meds-form-list.component.scss'],
 })
 export class MedsFormListComponent implements OnInit {
-
   @ViewChild('successSwal') public readonly sucessSwal!: SwalComponent;
   form = this.fb.group({
     name: '',
@@ -97,7 +123,11 @@ export class MedsFormListComponent implements OnInit {
   totalItems = 0;
   route = `/modules/meds/form/create`;
 
-  constructor(private medsService: MedsService, private router: Router, private fb: FormBuilder) {}
+  constructor(
+    private medsService: MedsService,
+    private router: Router,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit(): void {
     this.getMedsForms();

@@ -9,12 +9,6 @@ import { environment } from 'src/environments/environment';
 export class ProfessionalsService {
   constructor(private http: HttpClient) {}
 
-  getProfessionals(): Promise<any[]> {
-    return firstValueFrom(
-      this.http.get<any[]>(`${environment.apiUrl}/professionals`)
-    );
-  }
-
   getMonthlyProfessionalsQuantity(): Promise<any[]>{
     return firstValueFrom(this.http.get<any[]>(`${environment.apiUrl}/professionals/monthly-quantity`));
   }
@@ -32,6 +26,20 @@ export class ProfessionalsService {
         }/professionals/specializations?page=${page}&take=10&deleted=${
           deleted ? 1 : 0
         }&name=${name}&description=${description}`
+      )
+    );
+  }
+
+  getProfessionals(
+    page: number,
+    firstName: string,
+    lastName: string
+  ): Promise<any> {
+    return firstValueFrom(
+      this.http.get<any>(
+        `${
+          environment.apiUrl
+        }/professionals/dashboard?page=${page}&take=10&firstName=${firstName}&lastName=${lastName}`
       )
     );
   }

@@ -8,7 +8,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
   selector: 'app-meds-drug-create',
   template: `
     <div class="skeleton-container">
-      <h3 class="pt-4">{{ this.editMode ? 'Editar' : 'Nueva' }} Droga </h3>
+      <h3 class="pt-4">{{ this.editMode ? 'Editar' : 'Nueva' }} droga </h3>
       <form class="me-3 mt-3" [formGroup]="this.form" (ngSubmit)="onSubmit()">
         <div class="mb-3">
           <label for="name" class="form-label">Nombre</label>
@@ -22,7 +22,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
     </div>
     <swal
       #successSwal
-      [text]="'Especializacion ' + (editMode ? 'editada' : 'creada') + ' correctamente'"
+      [text]="'Droga del medicamento ' + (editMode ? 'editada' : 'creada') + ' correctamente'"
       icon="success"
       (confirm)="navigate()"
     >

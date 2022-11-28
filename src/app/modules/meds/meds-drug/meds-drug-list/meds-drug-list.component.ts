@@ -8,7 +8,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
   selector: 'app-meds-drug-list',
   template: `
     <div class="skeleton-container">
-      <app-module-header title="Tipos" [route]="this.route"></app-module-header>
+      <app-module-header title="Drogas" [route]="this.route"></app-module-header>
       <div class="layout">
         <div class="filter">
           <div class="mt-3">
@@ -71,7 +71,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                   ></swal>
                   <swal
                     #successSwal
-                    text="Especializacion deshabilitada correctamente"
+                    text="Droga del medicamento deshabilitada correctamente"
                     icon="success"
                     (confirm)="this.getMedsDrugs()"
                   >
@@ -81,7 +81,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
             </tbody>
           </table>
           <h5 *ngIf="this.medsDrugs.length === 0">
-            No se encontraron drogas con los parametros ingresados
+            No se encontraron drogas de medicamentos con los parametros ingresados
           </h5>
         </div>
       </div>

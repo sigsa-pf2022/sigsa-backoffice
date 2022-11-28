@@ -8,7 +8,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
   selector: 'app-meds-measurement-list',
   template: `
         <div class="skeleton-container">
-      <app-module-header title="Tipos" [route]="this.route"></app-module-header>
+      <app-module-header title="Unidad de medida" [route]="this.route"></app-module-header>
       <div class="layout">
         <div class="filter">
           <div class="mt-3">
@@ -71,7 +71,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                   ></swal>
                   <swal
                     #successSwal
-                    text="Especializacion deshabilitada correctamente"
+                    text="Unidad de medida de medicamento deshabilitada correctamente"
                     icon="success"
                     (confirm)="this.getMedsMeasurements()"
                   >

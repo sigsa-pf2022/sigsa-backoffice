@@ -23,7 +23,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
     </div>
     <swal
       #successSwal
-      [text]="'Especializacion ' + (editMode ? 'editada' : 'creada') + ' correctamente'"
+      [text]="'Unidad de medida de medicamento ' + (editMode ? 'editada' : 'creada') + ' correctamente'"
       icon="success"
       (confirm)="navigate()"
     >

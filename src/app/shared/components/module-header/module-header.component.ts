@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
           <button class="btn" (click)="this.toggleFilters()">
             <i class="bi bi-funnel fs-4"></i>
           </button>
-          <button class="btn btn-success" (click)="this.goToCreate()">
+          <button *ngIf="this.showCreation" class="btn btn-success" (click)="this.goToCreate()">
             <i class="bi bi-plus fs-4"></i>
           </button>
         </div>
@@ -24,6 +24,7 @@ import { Router } from '@angular/router';
 export class ModuleHeaderComponent implements OnInit {
   @Input() title: string = '';
   @Input() route: string = '';
+  @Input() showCreation: boolean = true;
   @Output() showFilters = new EventEmitter<boolean>();
   showF = true;
   constructor(private router: Router) {}

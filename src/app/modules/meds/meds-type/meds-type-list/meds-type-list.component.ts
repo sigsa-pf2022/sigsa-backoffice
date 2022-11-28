@@ -8,21 +8,38 @@ import { MedsService } from 'src/app/services/meds/meds.service';
   selector: 'app-meds-type-list',
   template: `
     <div class="skeleton-container">
-      <app-module-header title="Tipos" [route]="this.route"></app-module-header>
+      <app-module-header
+        title="Tipos"
+        [route]="this.route"
+        (showFilters)="this.toggle($event)"
+      ></app-module-header>
       <div class="layout">
-        <div class="filter">
+        <div class="filter" [class.d-none]="!this.showFilters">
           <div class="mt-3">
             <h3>Filtros</h3>
           </div>
           <form class="me-3 mt-3" [formGroup]="this.form" (ngSubmit)="filter()">
             <div class="mb-3">
               <label for="name" class="form-label">Nombre</label>
-              <input type="text" class="form-control" formControlName="name" id="name" />
+              <input
+                type="text"
+                class="form-control"
+                formControlName="name"
+                id="name"
+              />
             </div>
             <div class="mb-3">
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" formControlName="deleted" value="" id="deleted" />
-                <label class="form-check-label" for="deleted"> Deshabilitado </label>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  formControlName="deleted"
+                  value=""
+                  id="deleted"
+                />
+                <label class="form-check-label" for="deleted">
+                  Deshabilitado
+                </label>
               </div>
             </div>
           </form>
@@ -43,7 +60,10 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                 <th scope="row">{{ type.id }}</th>
                 <td>{{ type.name }}</td>
                 <td>{{ type.description }}</td>
-                <td [class.text-danger]="type.deleted" [class.text-success]="!type.deleted">
+                <td
+                  [class.text-danger]="type.deleted"
+                  [class.text-success]="!type.deleted"
+                >
                   {{ type.deleted ? 'Deshabilitado' : 'Habilitado' }}
                 </td>
                 <td>
@@ -73,7 +93,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                   ></swal>
                   <swal
                     #successSwal
-                    text="Especializacion deshabilitada correctamente"
+                    text="Tipo de medicamento deshabilitada correctamente"
                     icon="success"
                     (confirm)="this.getMedsTypes()"
                   >
@@ -83,15 +103,19 @@ import { MedsService } from 'src/app/services/meds/meds.service';
             </tbody>
           </table>
           <h5 *ngIf="this.medsTypes.length === 0">
-            No se encontraron specializaciones con los parametros ingresados
+            No se encontraron tipos de medicamentos con los parametros
+            ingresados
           </h5>
         </div>
       </div>
     </div>
-    <app-pagination [totalItems]="this.totalItems" (pageChanged)="changed($event)"></app-pagination>
+    <app-pagination
+      [totalItems]="this.totalItems"
+      (pageChanged)="changed($event)"
+    ></app-pagination>
   `,
 
-  styleUrls: ['./meds-type-list.component.scss']
+  styleUrls: ['./meds-type-list.component.scss'],
 })
 export class MedsTypeListComponent implements OnInit {
   @ViewChild('successSwal') public readonly sucessSwal!: SwalComponent;
@@ -101,10 +125,15 @@ export class MedsTypeListComponent implements OnInit {
   });
   medsTypes: any[] = [];
   opened = false;
+  showFilters = true;
   totalItems = 0;
   route = `/modules/meds/type/create`;
 
-  constructor(private medsService: MedsService, private router: Router, private fb: FormBuilder) {}
+  constructor(
+    private medsService: MedsService,
+    private router: Router,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit(): void {
     this.getMedsTypes();
@@ -113,8 +142,18 @@ export class MedsTypeListComponent implements OnInit {
   changed(page: any) {
     this.getMedsTypes(page);
   }
-  async getMedsTypes(page: number = 0) {
-    const res = await this.medsService.getMedsTypes(page);
+  async getMedsTypes(
+    page: number = 0,
+    deleted: boolean = false,
+    name: string = '',
+    description: string = ''
+  ) {
+    const res = await this.medsService.getMedsTypes(
+      page,
+      deleted,
+      name,
+      description
+    );
     this.medsTypes = res.data;
     this.totalItems = res.count;
   }
@@ -139,11 +178,16 @@ export class MedsTypeListComponent implements OnInit {
     this.opened = !this.opened;
   }
 
-  filter() {
-    console.log(this.form.value);
+  async filter() {
+    await this.getMedsTypes(
+      0,
+      this.form.value.deleted,
+      this.form.value.name,
+      this.form.value.description
+    );
   }
 
-  // toggle(value: boolean) {
-  //   this.showFilters = value;
-  // }
+  toggle(value: boolean) {
+    this.showFilters = value;
+  }
 }
