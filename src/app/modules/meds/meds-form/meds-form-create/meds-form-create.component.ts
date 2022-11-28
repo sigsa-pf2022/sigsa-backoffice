@@ -3,7 +3,6 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import { MedsService } from 'src/app/services/meds/meds.service';
-import { ProfessionalsService } from 'src/app/services/professionals/professionals.service';
 
 @Component({
   selector: 'app-meds-form-create',
@@ -15,11 +14,6 @@ import { ProfessionalsService } from 'src/app/services/professionals/professiona
           <label for="name" class="form-label">Nombre</label>
           <input type="text" class="form-control" formControlName="name" id="name" />
         </div>
-        <div class="mb-3">
-          <label for="description" class="form-label">Descripción</label>
-          <textarea class="form-control" id="description" formControlName="description" rows="3"></textarea>
-        </div>
-
         <div>
           <button class="btn btn-success me-3" [disabled]="!this.form.valid" type="submit">Confirmar</button>
           <button class="btn btn-danger" (click)="navigate()">Cancelar</button>
@@ -70,28 +64,27 @@ export class MedsFormCreateComponent implements OnInit {
   }
 
   update() {
-    // this.medsFormToUpdate
-    //   .updateProfessionalsSpecialization(this.medsFormToUpdate.id, this.form.value)
-    //   .then(() => this.sucessSwal.fire())
-    //   .catch(( error ) => {
-    //     this.errorSwal.update({ text: error.message });
-    //     this.errorSwal.fire();
-    //   });
+    this.medsService
+      .updateMedsForm(this.medsFormToUpdate.id, this.form.value)
+      .then(() => this.sucessSwal.fire())
+      .catch(({error}: {error:any} ) => {
+        this.errorSwal.update({ text: error.message });
+        this.errorSwal.fire();
+      });
   }
 
   create() {
-    // this.medsFormToUpdate
-    //   .createProfessionalsSpecialization(this.form.value)
-    //   .then(() => this.sucessSwal.fire())
-    //   .catch(({ error }) => {
-    //     this.errorSwal.update({ text: error.message });
-    //     this.errorSwal.fire();
-    //   });
+    this.medsService
+      .createMedsForm(this.form.value)
+      .then(() => this.sucessSwal.fire())
+      .catch(({error}: {error:any}) => {
+        this.errorSwal.update({ text: error.message });
+        this.errorSwal.fire();
+      });
   }
 
   navigate() {
-    this.router.navigateByUrl('/modules/professionals/specializations/list');
+    this.router.navigateByUrl('/modules/meds/form/list');
   }
-
 }
 

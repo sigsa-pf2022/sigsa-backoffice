@@ -1,11 +1,11 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
-import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
-import { ProfessionalsService } from 'src/app/services/professionals/professionals.service';
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { FormBuilder } from "@angular/forms";
+import { Router } from "@angular/router";
+import { SwalComponent } from "@sweetalert2/ngx-sweetalert2";
+import { ProfessionalsService } from "src/app/services/professionals/professionals.service";
 
 @Component({
-  selector: 'app-professionals-specializations',
+  selector: "app-professionals-specializations",
   template: `
     <div class="skeleton-container">
       <app-module-header
@@ -79,7 +79,7 @@ import { ProfessionalsService } from 'src/app/services/professionals/professiona
                   [class.text-danger]="specialization.deleted"
                   [class.text-success]="!specialization.deleted"
                 >
-                  {{ specialization.deleted ? 'Deshabilitado' : 'Habilitado' }}
+                  {{ specialization.deleted ? "Deshabilitado" : "Habilitado" }}
                 </td>
                 <td>
                   <button
@@ -145,13 +145,13 @@ import { ProfessionalsService } from 'src/app/services/professionals/professiona
       (pageChanged)="changed($event)"
     ></app-pagination>
   `,
-  styleUrls: ['./professionals-specializations.component.scss'],
+  styleUrls: ["./professionals-specializations.component.scss"],
 })
 export class ProfessionalsSpecializationsComponent implements OnInit {
-  @ViewChild('successSwal') public readonly sucessSwal!: SwalComponent;
+  @ViewChild("successSwal") public readonly sucessSwal!: SwalComponent;
   form = this.fb.group({
-    name: '',
-    description: '',
+    name: "",
+    description: "",
     deleted: false,
   });
   professionalsSpecializations: any[] = [];
@@ -159,7 +159,7 @@ export class ProfessionalsSpecializationsComponent implements OnInit {
   totalItems = 0;
   route = `/modules/professionals/specializations/create`;
   showFilters = true;
-  successText: string = '';
+  successText: string = "";
   constructor(
     private professionalsService: ProfessionalsService,
     private router: Router,
@@ -175,57 +175,57 @@ export class ProfessionalsSpecializationsComponent implements OnInit {
       page,
       this.form.value.deleted,
       this.form.value.name,
-      this.form.value.description,
-      );
-    }
-    async getProfessionalsSpecializations(
-      page: number = 0,
-      deleted: boolean = false,
-      name: string = '',
-      description:string = ''
-      ) {
-        const res = await this.professionalsService.getProfessionalsSpecializations(
-          page,
-          deleted,
-          name,
-          description,
-          );
-          this.professionalsSpecializations = res.data;
-          this.totalItems = res.total;
-        }
-        
-        edit(id: number) {
+      this.form.value.description
+    );
+  }
+  async getProfessionalsSpecializations(
+    page: number = 0,
+    deleted: boolean = false,
+    name: string = "",
+    description: string = ""
+  ) {
+    const res = await this.professionalsService.getProfessionalsSpecializations(
+      page,
+      deleted,
+      name,
+      description
+    );
+    this.professionalsSpecializations = res.data;
+    this.totalItems = res.total;
+  }
+
+  edit(id: number) {
     this.router.navigateByUrl(
       `modules/professionals/specializations/edit/${id}`
-      );
-    }
-    
-    remove(id: number) {
-      this.successText = 'Especializacion deshabilitada correctamente';
-      this.professionalsService
+    );
+  }
+
+  remove(id: number) {
+    this.successText = "Especializacion deshabilitada correctamente";
+    this.professionalsService
       .deleteProfessionalsSpecialization(id)
       .then(() => this.sucessSwal.fire())
       .then(() => this.filter());
-    }
-    
-    recover(id: number) {
-      this.successText = 'Especializacion habilitada correctamente';
-      this.professionalsService
+  }
+
+  recover(id: number) {
+    this.successText = "Especializacion habilitada correctamente";
+    this.professionalsService
       .recoverProfessionalsSpecialization(id)
       .then(() => this.sucessSwal.fire())
       .then(() => this.filter());
-    }
-    
-    openFilter() {
-      this.opened = !this.opened;
-    }
-    
-    async filter() {
-      await this.getProfessionalsSpecializations(
-        0,
-        this.form.value.deleted,
-        this.form.value.name,
-        this.form.value.description,
+  }
+
+  openFilter() {
+    this.opened = !this.opened;
+  }
+
+  async filter() {
+    await this.getProfessionalsSpecializations(
+      0,
+      this.form.value.deleted,
+      this.form.value.name,
+      this.form.value.description
     );
   }
 

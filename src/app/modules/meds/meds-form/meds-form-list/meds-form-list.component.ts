@@ -39,7 +39,6 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               <tr *ngFor="let forms of this.medsForms">
                 <th scope="row">{{ forms.id }}</th>
                 <td>{{ forms.name }}</td>
-                <td>{{ forms.description }}</td>
                 <td [class.text-danger]="forms.deleted" [class.text-success]="!forms.deleted">
                   {{ forms.deleted ? 'Deshabilitado' : 'Habilitado' }}
                 </td>
@@ -96,7 +95,7 @@ export class MedsFormListComponent implements OnInit {
   medsForms: any[] = [];
   opened = false;
   totalItems = 0;
-  route = `/modules/meds/forms/create`;
+  route = `/modules/meds/form/create`;
 
   constructor(private medsService: MedsService, private router: Router, private fb: FormBuilder) {}
 
@@ -114,7 +113,7 @@ export class MedsFormListComponent implements OnInit {
   }
 
   edit(id: number) {
-    this.router.navigateByUrl(`modules/meds/forms/edit/${id}`);
+    this.router.navigateByUrl(`modules/meds/form/edit/${id}`);
   }
 
   remove(id: number) {
