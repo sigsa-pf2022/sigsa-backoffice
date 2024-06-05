@@ -1,35 +1,77 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import { Chart } from 'node_modules/chart.js';
 import { registerables } from 'node_modules/chart.js';
+import 'chart.js/auto';
 @Component({
   selector: 'app-barchart',
   template: ` <div class="chart-container">
+    <h5>{{ this.title }}</h5>
     <canvas id="myChart">{{ this.chart }}</canvas>
   </div>`,
   styleUrls: ['./barchart.component.scss'],
 })
-export class BarchartComponent implements OnInit {
-  public chart: any;
+export class BarchartComponent implements OnInit, OnChanges {
+  @Input() title: string = '';
+  @Input() labels: string[] = [];
+  @Input() usersData: number[] = [];
+  @Input() professionalsData: number[] = [];
+  chart: Chart | undefined;
 
   constructor() {}
 
   ngOnInit(): void {
     Chart.register(...registerables);
-    this.createChart();
-    console.log(this.chart);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['usersData']) {
+      console.log('cambio Users');
+      this.usersData = changes['usersData'].currentValue;
+      if (this.chart) {
+        this.chart.data.datasets[0].data = this.usersData;
+        this.chart.update();
+      } else {
+        this.createChart();
+      }
+    } else if (changes['professionalsData']) {
+      console.log('cambio Professionals');
+      this.professionalsData = changes['professionalsData'].currentValue;
+      if (this.chart) {
+        this.chart.data.datasets[1].data = this.professionalsData;
+        this.chart.update();
+      } else {
+        this.createChart();
+      }
+    }
   }
 
   createChart() {
     this.chart = new Chart('myChart', {
-      type: 'doughnut',
+      type: 'bar',
       data: {
-        labels: ['red', 'blue', 'yellow'],
+        labels: this.labels,
         datasets: [
           {
-            label: 'My First Dataset',
-            data: [300, 50, 100],
-            backgroundColor: ['rgb(255, 99, 132)', 'rgb(54, 162, 235)', 'rgb(255, 205, 86)'],
-            hoverOffset: 4,
+            maxBarThickness: 30,
+            label: 'Usuarios',
+            data: this.usersData,
+            backgroundColor: ['rgba(54, 162, 235, 0.2)'],
+            borderColor: ['rgb(54, 162, 235)'],
+            borderWidth: 1,
+          },
+          {
+            maxBarThickness: 30,
+            label: 'Profesionales',
+            data: this.professionalsData,
+            backgroundColor: ['rgba(255, 99, 132,0.2)'],
+            borderColor: ['rgb(255, 99, 132)'],
+            borderWidth: 1,
           },
         ],
       },
