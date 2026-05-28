@@ -1,0 +1,59 @@
+.range-selector {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  &__presets {
+    display: inline-flex;
+    background: #f3f4f6;
+    border-radius: 8px;
+    padding: 4px;
+  }
+
+  &__btn {
+    border: none;
+    background: transparent;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #374151;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      background: rgba(54, 162, 235, 0.1);
+    }
+
+    &--active {
+      background: rgb(54, 162, 235);
+      color: #fff;
+
+      &:hover {
+        background: rgb(54, 162, 235);
+      }
+    }
+  }
+
+  &__custom {
+    display: inline-flex;
+    gap: 12px;
+    align-items: center;
+
+    label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #374151;
+    }
+
+    input[type='date'] {
+      padding: 5px 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 13px;
+      background: #fff;
+    }
+  }
+}

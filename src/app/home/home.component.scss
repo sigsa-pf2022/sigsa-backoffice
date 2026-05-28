@@ -1,22 +1,72 @@
-.charts {
+.dashboard {
+  margin-top: 56px;
+  margin-left: 216px;
+  padding: 24px;
   display: flex;
-  padding-top: 30px;
-  gap: 16px;
-  flex-wrap: wrap;
-  &__users {
+  flex-direction: column;
+  gap: 24px;
+
+  &__header {
     display: flex;
-    gap: 8px;
-    flex-direction: column;
-    padding: 8px 16px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px 3px rgba(0, 0, 0, 0.12);
-    &__title {
-      gap: 8px;
-      display: flex;
-      align-items: center;
-      i{
-        color: green;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+    }
+  }
+}
+
+.range-selector {
+  display: inline-flex;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 4px;
+
+  &__btn {
+    border: none;
+    background: transparent;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #374151;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      background: rgba(54, 162, 235, 0.1);
+    }
+
+    &--active {
+      background: rgb(54, 162, 235);
+      color: #fff;
+
+      &:hover {
+        background: rgb(54, 162, 235);
       }
     }
   }
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.charts {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.chart-card {
+  padding: 16px 18px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 0 10px 3px rgba(0, 0, 0, 0.08);
 }

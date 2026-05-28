@@ -1,0 +1,110 @@
+<div class="dashboard">
+  <div class="dashboard__header">
+    <h2>Panel de métricas</h2>
+    <app-date-range-selector
+      [value]="range"
+      (valueChange)="onRangeChange($event)"
+    ></app-date-range-selector>
+  </div>
+
+  <section class="kpi-grid">
+    <app-kpi-card
+      title="Usuarios"
+      [value]="overview?.totalUsers ?? null"
+      [subtitle]="
+        overview ? (overview.activeUsers | number) + ' activos en el período' : ''
+      "
+      [loading]="loadingOverview"
+    ></app-kpi-card>
+
+    <app-kpi-card
+      title="Profesionales"
+      [value]="overview?.totalProfessionals ?? null"
+      [subtitle]="overview ? 'registrados en el período' : ''"
+      [loading]="loadingOverview"
+    ></app-kpi-card>
+
+    <app-kpi-card
+      title="Grupos familiares"
+      [value]="overview?.totalFamilyGroups ?? null"
+      [subtitle]="
+        overview ? (overview.totalDependents | number) + ' dependientes' : ''
+      "
+      [loading]="loadingOverview"
+    ></app-kpi-card>
+
+    <app-kpi-card
+      title="Vinculaciones"
+      [value]="linkStatus?.total ?? null"
+      [subtitle]="
+        linkStatus
+          ? linkStatus.accepted + ' aceptadas / ' + linkStatus.pending + ' pendientes'
+          : ''
+      "
+      [loading]="loadingLinkStatus"
+    ></app-kpi-card>
+  </section>
+
+  <section class="kpi-grid">
+    <app-kpi-card
+      title="Turnos"
+      [value]="overview?.totalAppointments ?? null"
+      [subtitle]="overview ? 'creados en el período' : ''"
+      [loading]="loadingOverview"
+    ></app-kpi-card>
+
+    <app-kpi-card
+      title="Recordatorios med."
+      [value]="overview?.totalMedEvents ?? null"
+      [subtitle]="overview ? 'creados en el período' : ''"
+      [loading]="loadingOverview"
+    ></app-kpi-card>
+
+    <app-kpi-card
+      title="Documentos"
+      [value]="overview?.totalDocuments ?? null"
+      [subtitle]="overview ? 'creados en el período' : ''"
+      [loading]="loadingOverview"
+    ></app-kpi-card>
+
+    <app-kpi-card
+      title="Tamaño promedio grupo"
+      [value]="fgDistribution?.averageSize ?? null"
+      [subtitle]="
+        fgDistribution ? 'miembros por grupo familiar' : ''
+      "
+      [loading]="loadingFgDistribution"
+    ></app-kpi-card>
+  </section>
+
+  <section class="charts">
+    <div class="chart-card">
+      <app-barchart
+        [title]="eventsTitle"
+        [labels]="eventsLabels"
+        [datasets]="eventsDatasets"
+        [stacked]="true"
+        [loading]="loadingEvents"
+      ></app-barchart>
+    </div>
+
+    <div class="chart-card">
+      <app-barchart
+        [title]="topSpecializationsTitle"
+        [labels]="topSpecializationLabels"
+        [datasets]="specializationsDatasets"
+        [horizontal]="true"
+        [loading]="loadingSpecializations"
+      ></app-barchart>
+    </div>
+
+    <div class="chart-card">
+      <app-barchart
+        title="Distribución de grupos familiares"
+        [labels]="fgDistributionLabels"
+        [datasets]="fgDistributionDatasets"
+        [loading]="loadingFgDistribution"
+      ></app-barchart>
+    </div>
+  </section>
+</div>

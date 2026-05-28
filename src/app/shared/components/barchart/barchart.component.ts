@@ -1,80 +1,130 @@
 import {
+  AfterViewInit,
   Component,
+  ElementRef,
   Input,
   OnChanges,
-  OnInit,
+  OnDestroy,
   SimpleChanges,
+  ViewChild,
 } from '@angular/core';
-import { Chart } from 'node_modules/chart.js';
-import { registerables } from 'node_modules/chart.js';
+import { Chart, ChartType, registerables } from 'chart.js';
 import 'chart.js/auto';
+
+export interface BarchartDataset {
+  label: string;
+  data: number[];
+  color: string;
+}
+
+Chart.register(...registerables);
+
 @Component({
   selector: 'app-barchart',
-  template: ` <div class="chart-container">
-    <h5>{{ this.title }}</h5>
-    <canvas id="myChart">{{ this.chart }}</canvas>
-  </div>`,
+  template: `
+    <div class="chart-container">
+      <h5 *ngIf="title">{{ title }}</h5>
+      <div *ngIf="loading" class="chart-state">Cargando…</div>
+      <div *ngIf="!loading && empty" class="chart-state">Sin datos para mostrar</div>
+      <canvas #canvas [hidden]="loading || empty"></canvas>
+    </div>
+  `,
   styleUrls: ['./barchart.component.scss'],
 })
-export class BarchartComponent implements OnInit, OnChanges {
-  @Input() title: string = '';
+export class BarchartComponent implements AfterViewInit, OnChanges, OnDestroy {
+  @Input() title = '';
   @Input() labels: string[] = [];
-  @Input() usersData: number[] = [];
-  @Input() professionalsData: number[] = [];
+  @Input() datasets: BarchartDataset[] = [];
+  @Input() type: ChartType = 'bar';
+  @Input() horizontal = false;
+  @Input() stacked = false;
+  @Input() loading = false;
+
+  // Legacy inputs kept for backwards compatibility (original users/profs chart).
+  @Input() usersData: number[] | null = null;
+  @Input() professionalsData: number[] | null = null;
+
+  @ViewChild('canvas', { static: false }) canvasRef?: ElementRef<HTMLCanvasElement>;
+
   chart: Chart | undefined;
+  private viewReady = false;
 
-  constructor() {}
-
-  ngOnInit(): void {
-    Chart.register(...registerables);
+  get empty(): boolean {
+    const ds = this.resolveDatasets();
+    return !ds.length || ds.every((d) => !d.data?.some((v) => v > 0));
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['usersData']) {
-      console.log('cambio Users');
-      this.usersData = changes['usersData'].currentValue;
-      if (this.chart) {
-        this.chart.data.datasets[0].data = this.usersData;
-        this.chart.update();
-      } else {
-        this.createChart();
-      }
-    } else if (changes['professionalsData']) {
-      console.log('cambio Professionals');
-      this.professionalsData = changes['professionalsData'].currentValue;
-      if (this.chart) {
-        this.chart.data.datasets[1].data = this.professionalsData;
-        this.chart.update();
-      } else {
-        this.createChart();
-      }
+  ngAfterViewInit(): void {
+    this.viewReady = true;
+    if (!this.loading) this.renderChart();
+  }
+
+  ngOnChanges(_changes: SimpleChanges): void {
+    if (this.viewReady && !this.loading) this.renderChart();
+  }
+
+  ngOnDestroy(): void {
+    this.chart?.destroy();
+  }
+
+  private resolveDatasets(): BarchartDataset[] {
+    if (this.datasets?.length) return this.datasets;
+    // Legacy path: build datasets from usersData/professionalsData if present.
+    const legacy: BarchartDataset[] = [];
+    if (this.usersData) {
+      legacy.push({ label: 'Usuarios', data: this.usersData, color: 'rgb(54, 162, 235)' });
     }
+    if (this.professionalsData) {
+      legacy.push({ label: 'Profesionales', data: this.professionalsData, color: 'rgb(255, 99, 132)' });
+    }
+    return legacy;
   }
 
-  createChart() {
-    this.chart = new Chart('myChart', {
-      type: 'bar',
-      data: {
-        labels: this.labels,
-        datasets: [
-          {
-            maxBarThickness: 30,
-            label: 'Usuarios',
-            data: this.usersData,
-            backgroundColor: ['rgba(54, 162, 235, 0.2)'],
-            borderColor: ['rgb(54, 162, 235)'],
-            borderWidth: 1,
-          },
-          {
-            maxBarThickness: 30,
-            label: 'Profesionales',
-            data: this.professionalsData,
-            backgroundColor: ['rgba(255, 99, 132,0.2)'],
-            borderColor: ['rgb(255, 99, 132)'],
-            borderWidth: 1,
-          },
-        ],
+  private renderChart(): void {
+    const canvas = this.canvasRef?.nativeElement;
+    if (!canvas) return;
+    const datasets = this.resolveDatasets();
+    if (this.empty) {
+      this.chart?.destroy();
+      this.chart = undefined;
+      return;
+    }
+
+    const chartDatasets = datasets.map((d) => ({
+      label: d.label,
+      data: d.data,
+      backgroundColor: this.toRgba(d.color, 0.2),
+      borderColor: d.color,
+      borderWidth: 1,
+      maxBarThickness: 30,
+      stack: this.stacked ? 'stack-0' : undefined,
+    }));
+
+    if (this.chart) {
+      this.chart.data.labels = this.labels;
+      this.chart.data.datasets = chartDatasets as any;
+      this.chart.update();
+      return;
+    }
+
+    this.chart = new Chart(canvas, {
+      type: this.type,
+      data: { labels: this.labels, datasets: chartDatasets as any },
+      options: {
+        indexAxis: this.horizontal ? 'y' : 'x',
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { stacked: this.stacked, beginAtZero: true },
+          y: { stacked: this.stacked, beginAtZero: true },
+        },
       },
     });
+  }
+
+  private toRgba(color: string, alpha: number): string {
+    const rgbMatch = color.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/i);
+    if (rgbMatch) return `rgba(${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}, ${alpha})`;
+    return color;
   }
 }

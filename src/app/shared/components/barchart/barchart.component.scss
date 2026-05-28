@@ -1,4 +1,25 @@
-.chart-container{
-    display: block;
-    width: 400px;
+.chart-container {
+  display: block;
+  width: 100%;
+  min-height: 280px;
+  position: relative;
+
+  h5 {
+    margin: 0 0 12px;
+    font-weight: 600;
+  }
+
+  canvas {
+    width: 100% !important;
+    height: 280px !important;
+  }
+
+  .chart-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 240px;
+    color: #6b7280;
+    font-size: 14px;
+  }
 }
