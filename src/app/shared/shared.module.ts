@@ -8,6 +8,8 @@ import { ModuleHeaderComponent } from './components/module-header/module-header.
 import { PaginationComponent } from './components/pagination/pagination.component';
 import { KpiCardComponent } from './components/kpi-card/kpi-card.component';
 import { DateRangeSelectorComponent } from './components/date-range-selector/date-range-selector.component';
+import { TableSkeletonComponent } from './components/table-skeleton/table-skeleton.component';
+import { FormLoaderComponent } from './components/form-loader/form-loader.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +20,8 @@ import { DateRangeSelectorComponent } from './components/date-range-selector/dat
     PaginationComponent,
     KpiCardComponent,
     DateRangeSelectorComponent,
+    TableSkeletonComponent,
+    FormLoaderComponent,
   ],
   imports: [CommonModule, FormsModule],
   exports: [
@@ -28,6 +32,8 @@ import { DateRangeSelectorComponent } from './components/date-range-selector/dat
     PaginationComponent,
     KpiCardComponent,
     DateRangeSelectorComponent,
+    TableSkeletonComponent,
+    FormLoaderComponent,
   ],
 })
 export class SharedModule {}

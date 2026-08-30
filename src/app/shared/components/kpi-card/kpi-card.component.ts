@@ -12,7 +12,7 @@ import { Component, Input } from '@angular/core';
         {{ subtitle || ' ' }}
       </div>
       <ng-template #skeleton>
-        <div class="kpi-card__skeleton"></div>
+        <div class="kpi-card__skeleton sk-bar"></div>
       </ng-template>
     </div>
   `,

@@ -9,7 +9,8 @@ import { MedsService } from 'src/app/services/meds/meds.service';
   template: `
     <div class="skeleton-container">
       <h3 class="pt-4">{{ this.editMode ? 'Editar' : 'Nuevo' }} tipo </h3>
-      <form class="me-3 mt-3" [formGroup]="this.form" (ngSubmit)="onSubmit()">
+      <app-form-loader *ngIf="this.loading"></app-form-loader>
+      <form class="me-3 mt-3" [formGroup]="this.form" (ngSubmit)="onSubmit()" *ngIf="!this.loading">
         <div class="mb-3">
           <label for="name" class="form-label">Nombre</label>
           <input type="text" class="form-control" formControlName="name" id="name" />
@@ -39,6 +40,8 @@ export class MedsTypeCreateComponent implements OnInit {
   @ViewChild('successSwal') public readonly sucessSwal!: SwalComponent;
   @ViewChild('errorSwal') public readonly errorSwal!: SwalComponent;
   editMode = false;
+  /** Solo en edición: el form se ve vacío hasta que llegan los datos. */
+  loading = false;
   errorText: string = '';
   medsTypeToUpdate: any;
   form = this.fb.group({
@@ -59,8 +62,15 @@ export class MedsTypeCreateComponent implements OnInit {
   }
 
   async setType(itemId: number) {
-    this.medsTypeToUpdate = await this.medsService.getMedsTypeById(itemId);
-    this.form.patchValue(this.medsTypeToUpdate);
+    this.loading = true;
+    try {
+      this.medsTypeToUpdate = await this.medsService.getMedsTypeById(itemId);
+      this.form.patchValue(this.medsTypeToUpdate);
+    } catch (error) {
+      console.error('MedsTypeCreateComponent: error cargando el tipo', error);
+    } finally {
+      this.loading = false;
+    }
   }
 
   onSubmit() {

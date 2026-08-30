@@ -31,17 +31,9 @@
     white-space: pre;
   }
 
+  /* El shimmer vive en theme/skeleton.scss (.sk-bar), compartido con las tablas. */
   &__skeleton {
     height: 32px;
     width: 60%;
-    border-radius: 6px;
-    background: linear-gradient(90deg, #eee 0%, #f6f6f6 50%, #eee 100%);
-    background-size: 200% 100%;
-    animation: kpi-shimmer 1.2s ease-in-out infinite;
   }
-}
-
-@keyframes kpi-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
 }

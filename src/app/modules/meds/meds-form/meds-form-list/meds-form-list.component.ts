@@ -53,7 +53,8 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                 <th scope="col">Acciones</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody appTableSkeleton *ngIf="this.loading" [rows]="10" [cols]="4"></tbody>
+            <tbody *ngIf="!this.loading">
               <tr *ngFor="let forms of this.medsForms">
                 <th scope="row">{{ forms.id }}</th>
                 <td>{{ forms.name }}</td>
@@ -99,7 +100,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               </tr>
             </tbody>
           </table>
-          <h5 *ngIf="this.medsForms.length === 0">
+          <h5 *ngIf="!this.loading && this.medsForms.length === 0">
             No se encontraron formas de medicamentos con los parametros ingresados
           </h5>
         </div>
@@ -119,6 +120,7 @@ export class MedsFormListComponent implements OnInit {
     deleted: false,
   });
   medsForms: any[] = [];
+  loading = true;
   opened = false;
   totalItems = 0;
   route = `/modules/meds/form/create`;
@@ -137,9 +139,16 @@ export class MedsFormListComponent implements OnInit {
     this.getMedsForms(page);
   }
   async getMedsForms(page: number = 0) {
-    const res = await this.medsService.getMedsForms(page);
-    this.medsForms = res.data;
-    this.totalItems = res.count;
+    this.loading = true;
+    try {
+      const res = await this.medsService.getMedsForms(page);
+      this.medsForms = res.data;
+      this.totalItems = res.count;
+    } catch (error) {
+      console.error('MedsFormListComponent: error cargando formas', error);
+    } finally {
+      this.loading = false;
+    }
   }
 
   edit(id: number) {

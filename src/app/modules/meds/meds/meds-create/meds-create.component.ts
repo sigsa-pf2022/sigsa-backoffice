@@ -9,7 +9,8 @@ import { MedsService } from 'src/app/services/meds/meds.service';
   template: `
     <div class="skeleton-container">
       <h3 class="pt-4">{{ this.editMode ? 'Editar' : 'Nuevo' }} medicamento</h3>
-      <form class="me-3 mt-3" [formGroup]="this.form" (ngSubmit)="onSubmit()">
+      <app-form-loader *ngIf="this.loading"></app-form-loader>
+      <form class="me-3 mt-3" [formGroup]="this.form" (ngSubmit)="onSubmit()" *ngIf="!this.loading">
         <div class="mb-3">
           <label for="name" class="form-label">Nombre</label>
           <input
@@ -135,6 +136,8 @@ export class MedsCreateComponent implements OnInit {
   @ViewChild('successSwal') public readonly sucessSwal!: SwalComponent;
   @ViewChild('errorSwal') public readonly errorSwal!: SwalComponent;
   editMode = false;
+  /** Los 4 selects arrancan vacíos, y en edición además hay que traer el med. */
+  loading = true;
   errorText: string = '';
   medsToUpdate: any;
   drugs: any[];
@@ -158,18 +161,37 @@ export class MedsCreateComponent implements OnInit {
     private route: ActivatedRoute,
     private medsService: MedsService
   ) {}
-  ngOnInit(): void {
-    this.setData();
+  async ngOnInit(): Promise<void> {
     const itemId = this.route.snapshot.params['id'];
     this.editMode = itemId ? true : false;
-    if (this.editMode) this.setMed(itemId);
+
+    this.loading = true;
+    try {
+      // Los catálogos y el medicamento a editar son independientes entre sí.
+      await Promise.all([
+        this.setData(),
+        this.editMode ? this.setMed(itemId) : Promise.resolve(),
+      ]);
+    } catch (error) {
+      console.error('MedsCreateComponent: error cargando el formulario', error);
+    } finally {
+      this.loading = false;
+    }
   }
 
   async setData() {
-    this.drugs = await this.medsService.getAllMedsDrugs();
-    this.types = await this.medsService.getAllMedsTypes();
-    this.shapes = await this.medsService.getAllMedsForms();
-    this.measurementUnits = await this.medsService.getAllMedsMeasurements();
+    // Los cuatro catálogos son independientes: en paralelo el form aparece
+    // en el tiempo de la request más lenta, no en la suma de las cuatro.
+    const [drugs, types, shapes, measurementUnits] = await Promise.all([
+      this.medsService.getAllMedsDrugs(),
+      this.medsService.getAllMedsTypes(),
+      this.medsService.getAllMedsForms(),
+      this.medsService.getAllMedsMeasurements(),
+    ]);
+    this.drugs = drugs;
+    this.types = types;
+    this.shapes = shapes;
+    this.measurementUnits = measurementUnits;
   }
 
   async setMed(itemId: number) {

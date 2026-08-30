@@ -116,7 +116,8 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                 <th scope="col">Acciones</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody appTableSkeleton *ngIf="this.loading" [rows]="10" [cols]="9"></tbody>
+            <tbody *ngIf="!this.loading">
               <tr *ngFor="let med of this.meds">
                 <th scope="row">{{ med.id }}</th>
                 <td>{{ med.name }}</td>
@@ -167,7 +168,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               </tr>
             </tbody>
           </table>
-          <h5 *ngIf="this.meds.length === 0">
+          <h5 *ngIf="!this.loading && this.meds.length === 0">
             No se encontraron medicamentos con los parametros ingresados
           </h5>
         </div>
@@ -191,6 +192,7 @@ export class MedsListComponent implements OnInit {
     deleted: false,
   });
   meds: any[] = [];
+  loading = true;
   drugs: any[];
   types: any[];
   shapes: any[];
@@ -215,15 +217,34 @@ export class MedsListComponent implements OnInit {
     this.getMedsDrugs(page);
   }
   async getMedsDrugs(page: number = 0) {
-    const res = await this.medsService.getMeds(page);
-    this.meds = res.data;
-    this.totalItems = res.count;
+    this.loading = true;
+    try {
+      const res = await this.medsService.getMeds(page);
+      this.meds = res.data;
+      this.totalItems = res.count;
+    } catch (error) {
+      console.error('MedsListComponent: error cargando medicamentos', error);
+    } finally {
+      this.loading = false;
+    }
   }
   async setFiltersData() {
-    this.drugs = await this.medsService.getAllMedsDrugs();
-    this.types = await this.medsService.getAllMedsTypes();
-    this.shapes = await this.medsService.getAllMedsForms();
-    this.measurementUnits = await this.medsService.getAllMedsMeasurements();
+    try {
+      // Los cuatro catálogos de filtros son independientes: en paralelo los
+      // selects se llenan de una y no uno detrás de otro.
+      const [drugs, types, shapes, measurementUnits] = await Promise.all([
+        this.medsService.getAllMedsDrugs(),
+        this.medsService.getAllMedsTypes(),
+        this.medsService.getAllMedsForms(),
+        this.medsService.getAllMedsMeasurements(),
+      ]);
+      this.drugs = drugs;
+      this.types = types;
+      this.shapes = shapes;
+      this.measurementUnits = measurementUnits;
+    } catch (error) {
+      console.error('MedsListComponent: error cargando los filtros', error);
+    }
   }
   edit(id: number) {
     this.router.navigateByUrl(`modules/meds/edit/${id}`);

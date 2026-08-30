@@ -37,7 +37,8 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                 <th scope="col">Acciones</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody appTableSkeleton *ngIf="this.loading" [rows]="10" [cols]="4"></tbody>
+            <tbody *ngIf="!this.loading">
               <tr *ngFor="let drug of this.medsDrugs">
                 <th scope="row">{{ drug.id }}</th>
                 <td>{{ drug.name }}</td>
@@ -80,7 +81,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               </tr>
             </tbody>
           </table>
-          <h5 *ngIf="this.medsDrugs.length === 0">
+          <h5 *ngIf="!this.loading && this.medsDrugs.length === 0">
             No se encontraron drogas de medicamentos con los parametros ingresados
           </h5>
         </div>
@@ -98,6 +99,7 @@ export class MedsDrugListComponent implements OnInit {
   });
   medsDrugs: any[] = [];
   opened = false;
+  loading = true;
   totalItems = 0;
   route = `/modules/meds/drug/create`;
 
@@ -111,9 +113,16 @@ export class MedsDrugListComponent implements OnInit {
     this.getMedsDrugs(page);
   }
   async getMedsDrugs(page: number = 0) {
-    const res = await this.medsService.getMedsDrugs(page);
-    this.medsDrugs = res.data;
-    this.totalItems = res.count;
+    this.loading = true;
+    try {
+      const res = await this.medsService.getMedsDrugs(page);
+      this.medsDrugs = res.data;
+      this.totalItems = res.count;
+    } catch (error) {
+      console.error('MedsDrugListComponent: error cargando drogas', error);
+    } finally {
+      this.loading = false;
+    }
   }
 
   edit(id: number) {

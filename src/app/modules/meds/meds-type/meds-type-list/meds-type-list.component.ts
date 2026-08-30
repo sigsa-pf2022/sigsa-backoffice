@@ -55,7 +55,8 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                 <th scope="col">Acciones</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody appTableSkeleton *ngIf="this.loading" [rows]="10" [cols]="5"></tbody>
+            <tbody *ngIf="!this.loading">
               <tr *ngFor="let type of this.medsTypes">
                 <th scope="row">{{ type.id }}</th>
                 <td>{{ type.name }}</td>
@@ -102,7 +103,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               </tr>
             </tbody>
           </table>
-          <h5 *ngIf="this.medsTypes.length === 0">
+          <h5 *ngIf="!this.loading && this.medsTypes.length === 0">
             No se encontraron tipos de medicamentos con los parametros
             ingresados
           </h5>
@@ -124,6 +125,7 @@ export class MedsTypeListComponent implements OnInit {
     deleted: false,
   });
   medsTypes: any[] = [];
+  loading = true;
   opened = false;
   showFilters = true;
   totalItems = 0;
@@ -148,14 +150,21 @@ export class MedsTypeListComponent implements OnInit {
     name: string = '',
     description: string = ''
   ) {
-    const res = await this.medsService.getMedsTypes(
-      page,
-      deleted,
-      name,
-      description
-    );
-    this.medsTypes = res.data;
-    this.totalItems = res.count;
+    this.loading = true;
+    try {
+      const res = await this.medsService.getMedsTypes(
+        page,
+        deleted,
+        name,
+        description
+      );
+      this.medsTypes = res.data;
+      this.totalItems = res.count;
+    } catch (error) {
+      console.error('MedsTypeListComponent: error cargando tipos', error);
+    } finally {
+      this.loading = false;
+    }
   }
 
   edit(id: number) {

@@ -10,7 +10,8 @@ import { MedsService } from 'src/app/services/meds/meds.service';
   template: `
     <div class="skeleton-container">
       <h3 class="pt-4">{{ this.editMode ? 'Editar' : 'Nueva' }} unidad de medida </h3>
-      <form class="me-3 mt-3" [formGroup]="this.form" (ngSubmit)="onSubmit()">
+      <app-form-loader *ngIf="this.loading"></app-form-loader>
+      <form class="me-3 mt-3" [formGroup]="this.form" (ngSubmit)="onSubmit()" *ngIf="!this.loading">
         <div class="mb-3">
           <label for="name" class="form-label">Nombre</label>
           <input type="text" class="form-control" formControlName="name" id="name" />
@@ -36,6 +37,8 @@ export class MedsMeasurementCreateComponent implements OnInit {
   @ViewChild('successSwal') public readonly sucessSwal!: SwalComponent;
   @ViewChild('errorSwal') public readonly errorSwal!: SwalComponent;
   editMode = false;
+  /** Solo en edición: el form se ve vacío hasta que llegan los datos. */
+  loading = false;
   errorText: string = '';
   medsMeasurementToUpdate: any;
   form = this.fb.group({
@@ -56,8 +59,15 @@ export class MedsMeasurementCreateComponent implements OnInit {
   }
 
   async setMeasurement(itemId: number) {
-    this.medsMeasurementToUpdate = await this.medsService.getMedsMeasurementById(itemId);
-    this.form.patchValue(this.medsMeasurementToUpdate);
+    this.loading = true;
+    try {
+      this.medsMeasurementToUpdate = await this.medsService.getMedsMeasurementById(itemId);
+      this.form.patchValue(this.medsMeasurementToUpdate);
+    } catch (error) {
+      console.error('MedsMeasurementCreateComponent: error cargando la unidad', error);
+    } finally {
+      this.loading = false;
+    }
   }
 
   onSubmit() {

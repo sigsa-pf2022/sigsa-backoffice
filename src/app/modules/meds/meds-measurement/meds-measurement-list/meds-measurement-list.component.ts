@@ -37,7 +37,8 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                 <th scope="col">Acciones</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody appTableSkeleton *ngIf="this.loading" [rows]="10" [cols]="4"></tbody>
+            <tbody *ngIf="!this.loading">
               <tr *ngFor="let measurement of this.medsMeasurements">
                 <th scope="row">{{ measurement.id }}</th>
                 <td>{{ measurement.name }}</td>
@@ -80,7 +81,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               </tr>
             </tbody>
           </table>
-          <h5 *ngIf="this.medsMeasurements.length === 0">
+          <h5 *ngIf="!this.loading && this.medsMeasurements.length === 0">
             No se encontraron unidades de medida con los parametros ingresados
           </h5>
         </div>
@@ -97,6 +98,7 @@ export class MedsMeasurementListComponent implements OnInit {
     deleted: false,
   });
   medsMeasurements: any[] = [];
+  loading = true;
   opened = false;
   totalItems = 0;
   route = `/modules/meds/measurement/create`;
@@ -111,9 +113,16 @@ export class MedsMeasurementListComponent implements OnInit {
     this.getMedsMeasurements(page);
   }
   async getMedsMeasurements(page: number = 0) {
-    const res = await this.medsService.getMedsMeasurements(page);
-    this.medsMeasurements = res.data;
-    this.totalItems = res.count;
+    this.loading = true;
+    try {
+      const res = await this.medsService.getMedsMeasurements(page);
+      this.medsMeasurements = res.data;
+      this.totalItems = res.count;
+    } catch (error) {
+      console.error('MedsMeasurementListComponent: error cargando unidades', error);
+    } finally {
+      this.loading = false;
+    }
   }
 
   edit(id: number) {

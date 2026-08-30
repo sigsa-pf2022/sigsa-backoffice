@@ -65,7 +65,8 @@ import { ProfessionalsService } from "src/app/services/professionals/professiona
                 <th scope="col">Acciones</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody appTableSkeleton *ngIf="this.loading" [rows]="10" [cols]="5"></tbody>
+            <tbody *ngIf="!this.loading">
               <tr
                 *ngFor="
                   let specialization of this.professionalsSpecializations;
@@ -134,7 +135,7 @@ import { ProfessionalsService } from "src/app/services/professionals/professiona
               </tr>
             </tbody>
           </table>
-          <h5 *ngIf="this.professionalsSpecializations.length === 0">
+          <h5 *ngIf="!this.loading && this.professionalsSpecializations.length === 0">
             No se encontraron specializaciones con los parametros ingresados
           </h5>
         </div>
@@ -155,6 +156,7 @@ export class ProfessionalsSpecializationsComponent implements OnInit {
     deleted: false,
   });
   professionalsSpecializations: any[] = [];
+  loading = true;
   opened = false;
   totalItems = 0;
   route = `/modules/professionals/specializations/create`;
@@ -184,14 +186,21 @@ export class ProfessionalsSpecializationsComponent implements OnInit {
     name: string = "",
     description: string = ""
   ) {
-    const res = await this.professionalsService.getProfessionalsSpecializations(
-      page,
-      deleted,
-      name,
-      description
-    );
-    this.professionalsSpecializations = res.data;
-    this.totalItems = res.total;
+    this.loading = true;
+    try {
+      const res = await this.professionalsService.getProfessionalsSpecializations(
+        page,
+        deleted,
+        name,
+        description
+      );
+      this.professionalsSpecializations = res.data;
+      this.totalItems = res.total;
+    } catch (error) {
+      console.error('ProfessionalsSpecializationsComponent: error cargando especializaciones', error);
+    } finally {
+      this.loading = false;
+    }
   }
 
   edit(id: number) {

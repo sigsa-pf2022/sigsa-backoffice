@@ -1,0 +1,17 @@
+/* Las barras varían de ancho para que la fila fantasma no parezca una grilla
+   rígida. El shimmer y el fade-in vienen de theme/skeleton.scss. */
+td {
+  vertical-align: middle;
+
+  .sk-bar {
+    height: 14px;
+  }
+
+  &:first-child .sk-bar {
+    width: 40%;
+  }
+
+  &:last-child .sk-bar {
+    width: 55%;
+  }
+}

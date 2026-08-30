@@ -48,7 +48,8 @@ import { UsersService } from 'src/app/services/users/users.service';
                 <th scope="col">Fecha Creación</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody appTableSkeleton *ngIf="this.loading" [rows]="10" [cols]="5"></tbody>
+            <tbody *ngIf="!this.loading">
               <tr *ngFor="let user of this.users">
                 <th scope="row">{{ user.id }}</th>
                 <td>{{ user.firstName }}</td>
@@ -59,7 +60,7 @@ import { UsersService } from 'src/app/services/users/users.service';
             </tbody>
           </table>
 
-          <h5 *ngIf="this.users.length === 0">
+          <h5 *ngIf="!this.loading && this.users.length === 0">
             No se encontraron usuarios profesionales con los parametros ingresados
           </h5>
         </div>
@@ -74,6 +75,7 @@ import { UsersService } from 'src/app/services/users/users.service';
 })
 export class ProfessionalsComponent implements OnInit {
   users: any[] = [];
+  loading = true;
   showFilters = true;
   totalItems = 0;
   form = this.fb.group({
@@ -96,13 +98,20 @@ export class ProfessionalsComponent implements OnInit {
     firstName: string = '',
     lastName: string = ''
   ) {
-    const res = await this.professionalsService.getProfessionals(
-      page,
-      firstName,
-      lastName
-    );
-    this.users = res.data;
-    this.totalItems = res.count;
+    this.loading = true;
+    try {
+      const res = await this.professionalsService.getProfessionals(
+        page,
+        firstName,
+        lastName
+      );
+      this.users = res.data;
+      this.totalItems = res.count;
+    } catch (error) {
+      console.error('ProfessionalsComponent: error cargando profesionales', error);
+    } finally {
+      this.loading = false;
+    }
   }
   async filter() {
     await this.getUsers(
