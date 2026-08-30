@@ -51,6 +51,34 @@ export interface PatientsLinkStatus {
   total: number;
 }
 
+/**
+ * "Me hago cargo": cuánto se reparte el grupo familiar el cuidado del
+ * dependiente. `responseMinutes` mide desde que salió la push hasta que
+ * alguien respondió, y viene en null si no hubo respuestas en el período.
+ */
+export interface CareCoordination {
+  coverage: {
+    totalDependentEvents: number;
+    takenCharge: number;
+    rate: number; // porcentaje
+  };
+  responseMinutes: {
+    median: number | null;
+    p90: number | null;
+    sampleSize: number;
+  };
+  byType: {
+    appointment: number;
+    medEvent: number;
+  };
+  series: {
+    granularity: Granularity;
+    labels: string[];
+    appointments: number[];
+    medEvents: number[];
+  };
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -85,6 +113,13 @@ export class AnalyticsService {
   getPatientsLinkStatus(range: DateRange): Observable<PatientsLinkStatus> {
     return this.http.get<PatientsLinkStatus>(
       `${this.base}/patients-link-status`,
+      { params: this.params(range) },
+    );
+  }
+
+  getCareCoordination(range: DateRange): Observable<CareCoordination> {
+    return this.http.get<CareCoordination>(
+      `${this.base}/care-coordination`,
       { params: this.params(range) },
     );
   }

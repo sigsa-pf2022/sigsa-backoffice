@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {
   AnalyticsOverview,
   AnalyticsService,
+  CareCoordination,
   DateRange,
   EventsByPeriod,
   FamilyGroupsDistribution,
@@ -46,6 +47,11 @@ export class HomeComponent {
   fgDistributionLabels: string[] = [];
   fgDistributionDatasets: BarchartDataset[] = [];
 
+  // "Me hago cargo": corresponsabilidad del grupo familiar
+  careCoordination: CareCoordination | null = null;
+  careDatasets: BarchartDataset[] = [];
+  loadingCare = false;
+
   constructor(private analyticsService: AnalyticsService) {}
 
   onRangeChange(range: RangeValue): void {
@@ -64,6 +70,7 @@ export class HomeComponent {
     this.loadEvents();
     this.loadTopSpecializations();
     this.loadFamilyGroupsDistribution();
+    this.loadCareCoordination();
   }
 
   private loadOverview(): void {
@@ -160,6 +167,76 @@ export class HomeComponent {
         this.loadingFgDistribution = false;
       },
     });
+  }
+
+  private loadCareCoordination(): void {
+    this.loadingCare = true;
+    this.analyticsService.getCareCoordination(this.apiRange).subscribe({
+      next: (data) => {
+        this.careCoordination = data;
+        this.careDatasets = [
+          { label: 'Turnos', data: data.series?.appointments ?? [], color: 'rgb(153, 102, 255)' },
+          { label: 'Medicación', data: data.series?.medEvents ?? [], color: 'rgb(255, 159, 64)' },
+        ];
+        this.loadingCare = false;
+      },
+      error: (err) => {
+        console.error('Error loading care coordination', err);
+        this.careDatasets = [];
+        this.loadingCare = false;
+      },
+    });
+  }
+
+  /** Porcentaje de eventos de dependientes que alguien del grupo tomó. */
+  get coverageRate(): string | null {
+    const c = this.careCoordination?.coverage;
+    if (!c || !c.totalDependentEvents) return null;
+    return `${c.rate.toLocaleString('es-AR')} %`;
+  }
+
+  get coverageSubtitle(): string {
+    const c = this.careCoordination?.coverage;
+    if (!c) return '';
+    if (!c.totalDependentEvents) return 'sin eventos de dependientes en el período';
+    return `${c.takenCharge} de ${c.totalDependentEvents} eventos de dependientes`;
+  }
+
+  get responseTime(): string | null {
+    const r = this.careCoordination?.responseMinutes;
+    if (!r || r.median === null) return null;
+    return `${r.median.toLocaleString('es-AR')} min`;
+  }
+
+  get responseTimeSubtitle(): string {
+    const r = this.careCoordination?.responseMinutes;
+    if (!r) return '';
+    if (!r.sampleSize) return 'sin respuestas en el período';
+    const p90 = r.p90 !== null ? `, p90 ${r.p90.toLocaleString('es-AR')} min` : '';
+    return `sobre ${r.sampleSize} ${r.sampleSize === 1 ? 'respuesta' : 'respuestas'}${p90}`;
+  }
+
+  get takeChargeTotal(): number | null {
+    const t = this.careCoordination?.byType;
+    if (!t) return null;
+    return t.appointment + t.medEvent;
+  }
+
+  get takeChargeSubtitle(): string {
+    const t = this.careCoordination?.byType;
+    if (!t) return '';
+    return `${t.appointment} en turnos · ${t.medEvent} en medicación`;
+  }
+
+  get careLabels(): string[] {
+    return this.careCoordination?.series?.labels ?? [];
+  }
+
+  get careTitle(): string {
+    const g = this.careCoordination?.series?.granularity;
+    if (g === 'day') return '"Me hago cargo" por día';
+    if (g === 'week') return '"Me hago cargo" por semana';
+    return '"Me hago cargo" por mes';
   }
 
   get topSpecializationLabels(): string[] {

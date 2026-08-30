@@ -77,7 +77,41 @@
     ></app-kpi-card>
   </section>
 
+  <!-- Corresponsabilidad: qué tanto el grupo familiar se reparte el cuidado -->
+  <section class="kpi-grid">
+    <app-kpi-card
+      title="Eventos con alguien a cargo"
+      [value]="coverageRate"
+      [subtitle]="coverageSubtitle"
+      [loading]="loadingCare"
+    ></app-kpi-card>
+
+    <app-kpi-card
+      title="Tiempo de respuesta"
+      [value]="responseTime"
+      [subtitle]="responseTimeSubtitle"
+      [loading]="loadingCare"
+    ></app-kpi-card>
+
+    <app-kpi-card
+      title="Veces que alguien se hizo cargo"
+      [value]="takeChargeTotal"
+      [subtitle]="takeChargeSubtitle"
+      [loading]="loadingCare"
+    ></app-kpi-card>
+  </section>
+
   <section class="charts">
+    <div class="chart-card">
+      <app-barchart
+        [title]="careTitle"
+        [labels]="careLabels"
+        [datasets]="careDatasets"
+        [stacked]="true"
+        [loading]="loadingCare"
+      ></app-barchart>
+    </div>
+
     <div class="chart-card">
       <app-barchart
         [title]="eventsTitle"
