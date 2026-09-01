@@ -1,0 +1,44 @@
+/*
+ * Píldoras de estado. Copia de .status-badge del front (global.scss:559-579),
+ * con los mismos pares de tinte para que un "Habilitado" del backoffice se vea
+ * igual que un estado exitoso en la app.
+ */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: var(--radius-chip);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  background: var(--color-surface-subtle);
+  color: var(--color-text-secondary);
+}
+
+.status-badge--success {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status-badge--warning {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.status-badge--danger {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-badge--info {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.status-badge--violet {
+  background: var(--sigsa-50);
+  color: var(--sigsa-700);
+}

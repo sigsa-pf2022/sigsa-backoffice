@@ -7,7 +7,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
 @Component({
   selector: 'app-meds-type-list',
   template: `
-    <div class="skeleton-container">
+    <div class="app-page">
       <app-module-header
         title="Tipos"
         [route]="this.route"
@@ -61,15 +61,17 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                 <th scope="row">{{ type.id }}</th>
                 <td>{{ type.name }}</td>
                 <td>{{ type.description }}</td>
-                <td
-                  [class.text-danger]="type.deleted"
-                  [class.text-success]="!type.deleted"
-                >
-                  {{ type.deleted ? 'Deshabilitado' : 'Habilitado' }}
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.status-badge--danger]="type.deleted"
+                    [class.status-badge--success]="!type.deleted"
+                    >{{ type.deleted ? 'Deshabilitado' : 'Habilitado' }}</span
+                  >
                 </td>
                 <td>
                   <button
-                    class="btn btn-warning me-1"
+                    class="btn-icon btn-icon--edit"
                     (click)="edit(type.id)"
                     [disabled]="type.deleted"
                   >
@@ -77,7 +79,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                   </button>
                   <button
                     [disabled]="type.deleted"
-                    class="btn btn-danger"
+                    class="btn-icon btn-icon--danger"
                     [swal]="deleteSwal"
                     (confirm)="remove(type.id)"
                   >
@@ -89,7 +91,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                     cancelButtonText="Cancelar"
                     icon="question"
                     [focusCancel]="true"
-                    confirmButtonColor="red"
+                    [customClass]="{ popup: 'swal-danger' }"
                     text="Deshabilitar {{ type.name }}?"
                   ></swal>
                   <swal
@@ -103,17 +105,18 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               </tr>
             </tbody>
           </table>
-          <h5 *ngIf="!this.loading && this.medsTypes.length === 0">
-            No se encontraron tipos de medicamentos con los parametros
-            ingresados
-          </h5>
+          <div class="empty-state" *ngIf="!this.loading && this.medsTypes.length === 0">
+            <div class="empty-state__icon"><i class="bi bi-tags"></i></div>
+            <h2 class="empty-state__title">Sin resultados</h2>
+            <p class="empty-state__subtitle">No se encontraron tipos de medicamentos con los parámetros ingresados</p>
+          </div>
         </div>
       </div>
+      <app-pagination
+        [totalItems]="this.totalItems"
+        (pageChanged)="changed($event)"
+      ></app-pagination>
     </div>
-    <app-pagination
-      [totalItems]="this.totalItems"
-      (pageChanged)="changed($event)"
-    ></app-pagination>
   `,
 
   styleUrls: ['./meds-type-list.component.scss'],

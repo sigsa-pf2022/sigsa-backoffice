@@ -14,7 +14,7 @@ import {
     <nav *ngIf="this.pages.length > 0">
       <ul class="pagination justify-content-center">
         <li class="page-item" [class.disabled]="pageSelected === 0">
-          <a class="page-link clickable" (click)="previousPage()">Previous</a>
+          <a class="page-link clickable" (click)="previousPage()">Anterior</a>
         </li>
         <li
           class="page-item"
@@ -29,7 +29,7 @@ import {
           class="page-item"
           [class.disabled]="pageSelected === this.pages.length - 1 "
         >
-          <a class="page-link clickable" (click)="nextPage()">Next</a>
+          <a class="page-link clickable" (click)="nextPage()">Siguiente</a>
         </li>
       </ul>
     </nav>

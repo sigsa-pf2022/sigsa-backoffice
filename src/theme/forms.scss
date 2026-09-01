@@ -1,0 +1,110 @@
+/*
+ * Formularios. Port de .auth-field / .auth-input del front:
+ * input relleno gris, sin borde hasta el foco, con anillo violeta.
+ * Se aplica sobre las clases de Bootstrap que ya usan los templates.
+ */
+
+.form-label,
+.form-check-label {
+  margin-bottom: 6px;
+  padding-left: 2px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--color-text-secondary);
+}
+
+.form-control,
+.form-select {
+  min-height: var(--control-height);
+  padding: 8px 14px;
+  /* background-color, no el shorthand: el shorthand borraría el chevron SVG
+     que Bootstrap dibuja como background-image en .form-select */
+  background-color: var(--color-surface-subtle);
+  border: 1px solid transparent;
+  border-radius: var(--radius-input);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  transition: border-color 150ms ease, background-color 150ms ease, box-shadow 150ms ease;
+
+  &::placeholder {
+    color: var(--color-text-muted);
+    opacity: 1;
+  }
+
+  &:focus {
+    background-color: var(--color-surface);
+    border-color: var(--sigsa-500);
+    box-shadow: var(--focus-ring);
+  }
+
+  &:disabled {
+    background-color: var(--color-hairline);
+    color: var(--color-text-muted);
+  }
+}
+
+.form-select {
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+textarea.form-control {
+  min-height: 80px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.form-check-input {
+  width: 16px;
+  height: 16px;
+  margin-top: 0.2em;
+  background-color: var(--color-surface);
+  border: 1px solid #D8D8DE;
+  cursor: pointer;
+
+  &:checked {
+    background-color: var(--sigsa-500);
+    border-color: var(--sigsa-500);
+  }
+
+  &:focus {
+    border-color: var(--sigsa-500);
+    box-shadow: var(--focus-ring);
+  }
+}
+
+.form-check-label {
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+/* --- Card de formulario (páginas de alta / edición) --- */
+
+.form-card {
+  max-width: 720px;
+  padding: 24px;
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.form-card__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-hairline);
+}
+
+/* Grilla de campos: 2 columnas en escritorio, 1 cuando no entra */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px 20px;
+}
+
+.form-grid--full {
+  grid-column: 1 / -1;
+}

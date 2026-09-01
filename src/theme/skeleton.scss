@@ -1,25 +1,24 @@
 /* Placeholders con shimmer para las vistas que esperan datos del backend.
-   Antes, los listados arrancaban con el array vacío y mostraban
-   "No se encontraron ... con los parametros ingresados" durante la request.
-
-   Ojo: `.skeleton-container` en styles.scss NO es un skeleton, es el wrapper
-   de layout de cada página de módulo. De ahí el prefijo `sk-`. */
+   El delay de 120ms es el mismo que usa loading-state en el front: si el
+   backend responde rápido, nunca llega a verse un flash de skeleton. */
 
 .sk-bar {
   display: block;
   height: 14px;
   width: 100%;
   border-radius: 6px;
-  background: linear-gradient(90deg, #eee 0%, #f6f6f6 50%, #eee 100%);
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-subtle) 0%,
+    var(--color-hairline) 50%,
+    var(--color-surface-subtle) 100%
+  );
   background-size: 200% 100%;
   animation: sk-shimmer 1.2s ease-in-out infinite;
 }
 
-/* Los loaders arrancan invisibles y se revelan a los 120ms: contra el backend
-   local casi todo responde antes, así que no llegan a verse y evitamos
-   cambiar un parpadeo por otro. `both` mantiene el opacity:0 durante el delay. */
 .sk-fade-in {
-  animation: sk-fade-in 160ms ease-out both;
+  animation: sk-fade-in 160ms var(--ease-out-soft) both;
   animation-delay: 120ms;
 }
 

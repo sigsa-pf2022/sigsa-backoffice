@@ -1,0 +1,47 @@
+/*
+ * Shell de la aplicación.
+ *
+ * Antes cada página se empujaba sola con `margin-left: 216px; margin-top: 56px`
+ * hardcodeado. Ahora los offsets salen de los tokens --sidebar-width /
+ * --navbar-height, así el shell se ajusta cambiando una variable.
+ */
+
+.app-shell {
+  min-height: 100vh;
+}
+
+/* Wrapper de contenido de cada página.
+   `.skeleton-container` se mantiene como alias del nombre viejo: lo usan las 13
+   páginas de módulos y renombrarlo en todas no aporta nada visual. */
+.app-page,
+.skeleton-container {
+  margin-left: var(--sidebar-width);
+  margin-top: var(--navbar-height);
+  padding: var(--page-gutter);
+  min-height: calc(100vh - var(--navbar-height));
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Cabecera de página: título a la izquierda, acciones a la derecha */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.page-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 991.98px) {
+  :root {
+    --sidebar-width: 0px;
+    --page-gutter: 16px;
+  }
+}

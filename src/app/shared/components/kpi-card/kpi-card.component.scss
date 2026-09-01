@@ -3,37 +3,39 @@
   flex-direction: column;
   gap: 6px;
   padding: 16px 18px;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 0 10px 3px rgba(0, 0, 0, 0.08);
-  min-height: 110px;
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  min-height: 104px;
   height: 100%;
 
   &__title {
-    font-size: 13px;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
+    font-size: 11px;
     font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
   }
 
   &__value {
     font-size: 28px;
     font-weight: 700;
-    color: #111827;
     line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums;
   }
 
   &__subtitle {
     font-size: 12px;
-    color: #6b7280;
+    color: var(--color-text-secondary);
     min-height: 16px;
     white-space: pre;
   }
 
   /* El shimmer vive en theme/skeleton.scss (.sk-bar), compartido con las tablas. */
   &__skeleton {
-    height: 32px;
+    height: 30px;
     width: 60%;
   }
 }

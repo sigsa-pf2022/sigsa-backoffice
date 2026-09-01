@@ -1,6 +1,68 @@
-.navbar {
-  background-color: var(--color-primary);
-  a {
-    color: white;
-  }
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: var(--navbar-height);
+  padding: 0 20px;
+  background: var(--color-surface);
+  /* Mismo truco de "borde-sombra" que usa el header del front */
+  box-shadow: 0 1px 0 var(--color-hairline);
+}
+
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.topbar__logo {
+  width: 30px;
+  height: 30px;
+  display: block;
+}
+
+.topbar__title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--color-text);
+}
+
+.topbar__title-soft {
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, var(--sigsa-100) 0%, var(--sigsa-200) 100%);
+  box-shadow: inset 0 0 0 1px rgba(115, 56, 173, 0.08);
+  color: var(--sigsa-700);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.topbar__logout {
+  min-height: var(--control-height-sm);
+  padding: 6px 12px;
+  font-size: 13px;
 }

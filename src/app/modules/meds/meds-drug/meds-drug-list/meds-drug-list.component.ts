@@ -7,7 +7,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
 @Component({
   selector: 'app-meds-drug-list',
   template: `
-    <div class="skeleton-container">
+    <div class="app-page">
       <app-module-header title="Drogas" [route]="this.route"></app-module-header>
       <div class="layout">
         <div class="filter">
@@ -42,12 +42,17 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               <tr *ngFor="let drug of this.medsDrugs">
                 <th scope="row">{{ drug.id }}</th>
                 <td>{{ drug.name }}</td>
-                <td [class.text-danger]="drug.deleted" [class.text-success]="!drug.deleted">
-                  {{ drug.deleted ? 'Deshabilitado' : 'Habilitado' }}
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.status-badge--danger]="drug.deleted"
+                    [class.status-badge--success]="!drug.deleted"
+                    >{{ drug.deleted ? 'Deshabilitado' : 'Habilitado' }}</span
+                  >
                 </td>
                 <td>
                   <button
-                    class="btn btn-warning me-1"
+                    class="btn-icon btn-icon--edit"
                     (click)="edit(drug.id)"
                     [disabled]="drug.deleted"
                   >
@@ -55,7 +60,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                   </button>
                   <button
                     [disabled]="drug.deleted"
-                    class="btn btn-danger"
+                    class="btn-icon btn-icon--danger"
                     [swal]="deleteSwal"
                     (confirm)="remove(drug.id)"
                   >
@@ -67,7 +72,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                     cancelButtonText="Cancelar"
                     icon="question"
                     [focusCancel]="true"
-                    confirmButtonColor="red"
+                    [customClass]="{ popup: 'swal-danger' }"
                     text="Deshabilitar {{ drug.name }}?"
                   ></swal>
                   <swal
@@ -81,13 +86,15 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               </tr>
             </tbody>
           </table>
-          <h5 *ngIf="!this.loading && this.medsDrugs.length === 0">
-            No se encontraron drogas de medicamentos con los parametros ingresados
-          </h5>
+          <div class="empty-state" *ngIf="!this.loading && this.medsDrugs.length === 0">
+            <div class="empty-state__icon"><i class="bi bi-eyedropper"></i></div>
+            <h2 class="empty-state__title">Sin resultados</h2>
+            <p class="empty-state__subtitle">No se encontraron drogas de medicamentos con los parámetros ingresados</p>
+          </div>
         </div>
       </div>
+      <app-pagination [totalItems]="this.totalItems" (pageChanged)="changed($event)"></app-pagination>
     </div>
-    <app-pagination [totalItems]="this.totalItems" (pageChanged)="changed($event)"></app-pagination>
   `,
   styleUrls: ['./meds-drug-list.component.scss']
 })

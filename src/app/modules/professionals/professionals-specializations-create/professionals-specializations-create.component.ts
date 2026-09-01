@@ -7,22 +7,27 @@ import { ProfessionalsService } from 'src/app/services/professionals/professiona
 @Component({
   selector: 'app-professionals-specializations-create',
   template: `
-    <div class="skeleton-container">
-      <h3 class="pt-4">{{ this.editMode ? 'Editar' : 'Nueva' }} Especialización</h3>
+    <div class="app-page">
+      <h1 class="page-title">{{ this.editMode ? 'Editar' : 'Nueva' }} Especialización</h1>
       <app-form-loader *ngIf="this.loading"></app-form-loader>
-      <form class="me-3 mt-3" [formGroup]="this.form" (ngSubmit)="onSubmit()" *ngIf="!this.loading">
+      <form class="form-card" [formGroup]="this.form" (ngSubmit)="onSubmit()" *ngIf="!this.loading">
+        <div class="form-grid">
         <div class="mb-3">
           <label for="name" class="form-label">Nombre</label>
           <input type="text" class="form-control" formControlName="name" id="name" />
         </div>
-        <div class="mb-3">
+        <div class="mb-3 form-grid--full">
           <label for="description" class="form-label">Descripción</label>
           <textarea class="form-control" id="description" formControlName="description" rows="3"></textarea>
         </div>
-
-        <div>
-          <button class="btn btn-success me-3" [disabled]="!this.form.valid" type="submit">Confirmar</button>
-          <button class="btn btn-danger" (click)="navigate()">Cancelar</button>
+        </div>
+        <div class="form-card__actions">
+          <button class="btn btn-primary" [disabled]="!this.form.valid" type="submit">
+            Confirmar
+          </button>
+          <button class="btn btn-ghost" type="button" (click)="navigate()">
+            Cancelar
+          </button>
         </div>
       </form>
     </div>

@@ -9,7 +9,10 @@ import {
   PatientsLinkStatus,
   TopSpecializations,
 } from '../services/analytics/analytics.service';
-import { BarchartDataset } from '../shared/components/barchart/barchart.component';
+import {
+  BarchartDataset,
+  CHART_COLORS,
+} from '../shared/components/barchart/barchart.component';
 import { RangeValue } from '../shared/components/date-range-selector/date-range-selector.component';
 
 @Component({
@@ -107,9 +110,9 @@ export class HomeComponent {
       next: (data) => {
         this.eventsByPeriod = data;
         this.eventsDatasets = [
-          { label: 'Turnos', data: data.appointments ?? [], color: 'rgb(54, 162, 235)' },
-          { label: 'Recordatorios', data: data.medEvents ?? [], color: 'rgb(255, 159, 64)' },
-          { label: 'Documentos', data: data.documents ?? [], color: 'rgb(75, 192, 192)' },
+          { label: 'Turnos', data: data.appointments ?? [], color: CHART_COLORS.appointment },
+          { label: 'Recordatorios', data: data.medEvents ?? [], color: CHART_COLORS.medication },
+          { label: 'Documentos', data: data.documents ?? [], color: CHART_COLORS.document },
         ];
         this.loadingEvents = false;
       },
@@ -130,7 +133,7 @@ export class HomeComponent {
           {
             label: 'Turnos',
             data: data.counts ?? [],
-            color: 'rgb(153, 102, 255)',
+            color: CHART_COLORS.primary,
           },
         ];
         this.loadingSpecializations = false;
@@ -156,7 +159,7 @@ export class HomeComponent {
           {
             label: 'Cantidad de grupos',
             data: dist.map((d) => d.count),
-            color: 'rgb(255, 206, 86)',
+            color: CHART_COLORS.success,
           },
         ];
         this.loadingFgDistribution = false;
@@ -175,8 +178,8 @@ export class HomeComponent {
       next: (data) => {
         this.careCoordination = data;
         this.careDatasets = [
-          { label: 'Turnos', data: data.series?.appointments ?? [], color: 'rgb(153, 102, 255)' },
-          { label: 'Medicación', data: data.series?.medEvents ?? [], color: 'rgb(255, 159, 64)' },
+          { label: 'Turnos', data: data.series?.appointments ?? [], color: CHART_COLORS.appointment },
+          { label: 'Medicación', data: data.series?.medEvents ?? [], color: CHART_COLORS.medication },
         ];
         this.loadingCare = false;
       },

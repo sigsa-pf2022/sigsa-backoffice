@@ -5,8 +5,12 @@ import { UsersService } from 'src/app/services/users/users.service';
 @Component({
   selector: 'app-users',
   template: `
-    <div class="skeleton-container">
-      <app-module-header title="Usuarios" [showCreation]="false"></app-module-header>
+    <div class="app-page">
+      <app-module-header
+        title="Usuarios"
+        [showCreation]="false"
+        (showFilters)="toggle($event)"
+      ></app-module-header>
       <div class="layout">
         <div class="filter" [class.d-none]="!this.showFilters">
           <div class="mt-3">
@@ -56,16 +60,18 @@ import { UsersService } from 'src/app/services/users/users.service';
             </tbody>
           </table>
 
-          <h5 *ngIf="!this.loading && this.users.length === 0">
-            No se encontraron usuarios con los parametros ingresados
-          </h5>
+          <div class="empty-state" *ngIf="!this.loading && this.users.length === 0">
+            <div class="empty-state__icon"><i class="bi bi-people"></i></div>
+            <h2 class="empty-state__title">Sin resultados</h2>
+            <p class="empty-state__subtitle">No se encontraron usuarios con los parámetros ingresados</p>
+          </div>
         </div>
       </div>
+      <app-pagination
+        [totalItems]="this.totalItems"
+        (pageChanged)="changed($event)"
+      ></app-pagination>
     </div>
-    <app-pagination
-      [totalItems]="this.totalItems"
-      (pageChanged)="changed($event)"
-    ></app-pagination>
   `,
   styleUrls: ['./users.component.scss'],
 })

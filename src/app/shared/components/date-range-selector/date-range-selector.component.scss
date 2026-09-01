@@ -1,59 +1,92 @@
+/* Píldora segmentada, como el switcher de recordatorios del front:
+   track gris, pastilla activa blanca con sombra sutil. */
+
 .range-selector {
   display: flex;
   align-items: center;
-  gap: 16px;
   flex-wrap: wrap;
+  gap: 12px;
+}
 
-  &__presets {
-    display: inline-flex;
-    background: #f3f4f6;
-    border-radius: 8px;
-    padding: 4px;
+.range-selector__presets {
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  background: var(--color-surface-subtle);
+  border-radius: 14px;
+}
+
+.range-selector__btn {
+  padding: 7px 14px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease, box-shadow 150ms ease;
+
+  &:hover {
+    color: var(--color-text);
   }
 
-  &__btn {
-    border: none;
-    background: transparent;
-    padding: 6px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #374151;
-    transition: background-color 0.15s ease, color 0.15s ease;
-
-    &:hover {
-      background: rgba(54, 162, 235, 0.1);
-    }
-
-    &--active {
-      background: rgb(54, 162, 235);
-      color: #fff;
-
-      &:hover {
-        background: rgb(54, 162, 235);
-      }
-    }
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
   }
+}
 
-  &__custom {
-    display: inline-flex;
-    gap: 12px;
+.range-selector__btn--active {
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.08);
+
+  &:hover {
+    color: var(--color-text);
+  }
+}
+
+/* --- Rango personalizado --- */
+
+.range-selector__custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  label {
+    display: flex;
     align-items: center;
+    gap: 6px;
 
-    label {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 13px;
-      color: #374151;
+    span {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
     }
+  }
 
-    input[type='date'] {
-      padding: 5px 8px;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      font-size: 13px;
-      background: #fff;
+  input[type='date'] {
+    height: var(--control-height-sm);
+    padding: 0 10px;
+    background: var(--color-surface-subtle);
+    border: 1px solid transparent;
+    border-radius: var(--radius-input);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    transition: border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+
+    &:focus {
+      outline: none;
+      background: var(--color-surface);
+      border-color: var(--sigsa-500);
+      box-shadow: var(--focus-ring);
     }
   }
 }

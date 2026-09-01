@@ -1,55 +1,12 @@
-.dashboard {
-  margin-top: 56px;
-  margin-left: 216px;
-  padding: 24px;
+/* El offset de navbar/sidebar y el padding vienen de .app-page (theme/layout.scss).
+   Antes estaban duplicados acá como 56px/216px hardcodeados. */
+
+.dashboard__header {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
-
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-
-    h2 {
-      margin: 0;
-      font-size: 22px;
-      font-weight: 600;
-    }
-  }
-}
-
-.range-selector {
-  display: inline-flex;
-  background: #f3f4f6;
-  border-radius: 8px;
-  padding: 4px;
-
-  &__btn {
-    border: none;
-    background: transparent;
-    padding: 6px 14px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #374151;
-    transition: background-color 0.15s ease, color 0.15s ease;
-
-    &:hover {
-      background: rgba(54, 162, 235, 0.1);
-    }
-
-    &--active {
-      background: rgb(54, 162, 235);
-      color: #fff;
-
-      &:hover {
-        background: rgb(54, 162, 235);
-      }
-    }
-  }
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .kpi-grid {
@@ -58,15 +15,22 @@
   gap: 16px;
 }
 
+/* Fijo en 2 columnas: son 4 gráficos y con auto-fit quedaban 3 + 1 huérfano */
 .charts {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 1200px) {
+  .charts {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .chart-card {
-  padding: 16px 18px;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 0 10px 3px rgba(0, 0, 0, 0.08);
+  padding: 18px 20px;
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }

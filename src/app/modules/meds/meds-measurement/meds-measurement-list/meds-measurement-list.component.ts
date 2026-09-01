@@ -7,7 +7,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
 @Component({
   selector: 'app-meds-measurement-list',
   template: `
-        <div class="skeleton-container">
+        <div class="app-page">
       <app-module-header title="Unidad de medida" [route]="this.route"></app-module-header>
       <div class="layout">
         <div class="filter">
@@ -42,12 +42,17 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               <tr *ngFor="let measurement of this.medsMeasurements">
                 <th scope="row">{{ measurement.id }}</th>
                 <td>{{ measurement.name }}</td>
-                <td [class.text-danger]="measurement.deleted" [class.text-success]="!measurement.deleted">
-                  {{ measurement.deleted ? 'Deshabilitado' : 'Habilitado' }}
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.status-badge--danger]="measurement.deleted"
+                    [class.status-badge--success]="!measurement.deleted"
+                    >{{ measurement.deleted ? 'Deshabilitado' : 'Habilitado' }}</span
+                  >
                 </td>
                 <td>
                   <button
-                    class="btn btn-warning me-1"
+                    class="btn-icon btn-icon--edit"
                     (click)="edit(measurement.id)"
                     [disabled]="measurement.deleted"
                   >
@@ -55,7 +60,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                   </button>
                   <button
                     [disabled]="measurement.deleted"
-                    class="btn btn-danger"
+                    class="btn-icon btn-icon--danger"
                     [swal]="deleteSwal"
                     (confirm)="remove(measurement.id)"
                   >
@@ -67,7 +72,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                     cancelButtonText="Cancelar"
                     icon="question"
                     [focusCancel]="true"
-                    confirmButtonColor="red"
+                    [customClass]="{ popup: 'swal-danger' }"
                     text="Deshabilitar {{ measurement.name }}?"
                   ></swal>
                   <swal
@@ -81,13 +86,15 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               </tr>
             </tbody>
           </table>
-          <h5 *ngIf="!this.loading && this.medsMeasurements.length === 0">
-            No se encontraron unidades de medida con los parametros ingresados
-          </h5>
+          <div class="empty-state" *ngIf="!this.loading && this.medsMeasurements.length === 0">
+            <div class="empty-state__icon"><i class="bi bi-rulers"></i></div>
+            <h2 class="empty-state__title">Sin resultados</h2>
+            <p class="empty-state__subtitle">No se encontraron unidades de medida con los parámetros ingresados</p>
+          </div>
         </div>
       </div>
+      <app-pagination [totalItems]="this.totalItems" (pageChanged)="changed($event)"></app-pagination>
     </div>
-    <app-pagination [totalItems]="this.totalItems" (pageChanged)="changed($event)"></app-pagination>
   `,
   styleUrls: ['./meds-measurement-list.component.scss']
 })

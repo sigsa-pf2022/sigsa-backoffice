@@ -7,7 +7,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
 @Component({
   selector: 'app-meds-list',
   template: `
-    <div class="skeleton-container">
+    <div class="app-page">
       <app-module-header
         title="Medicamentos"
         [route]="this.route"
@@ -126,15 +126,17 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                 <td>{{ med.type.name }}</td>
                 <td>{{ med.shape.name }}</td>
                 <td>{{ med.measurementUnit.name }}</td>
-                <td
-                  [class.text-danger]="med.deleted"
-                  [class.text-success]="!med.deleted"
-                >
-                  {{ med.deleted ? 'Deshabilitado' : 'Habilitado' }}
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.status-badge--danger]="med.deleted"
+                    [class.status-badge--success]="!med.deleted"
+                    >{{ med.deleted ? 'Deshabilitado' : 'Habilitado' }}</span
+                  >
                 </td>
                 <td>
                   <button
-                    class="btn btn-warning me-1"
+                    class="btn-icon btn-icon--edit"
                     (click)="edit(med.id)"
                     [disabled]="med.deleted"
                   >
@@ -142,7 +144,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                   </button>
                   <button
                     [disabled]="med.deleted"
-                    class="btn btn-danger"
+                    class="btn-icon btn-icon--danger"
                     [swal]="deleteSwal"
                     (confirm)="remove(med.id)"
                   >
@@ -154,7 +156,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                     cancelButtonText="Cancelar"
                     icon="question"
                     [focusCancel]="true"
-                    confirmButtonColor="red"
+                    [customClass]="{ popup: 'swal-danger' }"
                     text="Deshabilitar {{ med.name }}?"
                   ></swal>
                   <swal
@@ -168,16 +170,18 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               </tr>
             </tbody>
           </table>
-          <h5 *ngIf="!this.loading && this.meds.length === 0">
-            No se encontraron medicamentos con los parametros ingresados
-          </h5>
+          <div class="empty-state" *ngIf="!this.loading && this.meds.length === 0">
+            <div class="empty-state__icon"><i class="bi bi-capsule"></i></div>
+            <h2 class="empty-state__title">Sin resultados</h2>
+            <p class="empty-state__subtitle">No se encontraron medicamentos con los parámetros ingresados</p>
+          </div>
         </div>
       </div>
+      <app-pagination
+        [totalItems]="this.totalItems"
+        (pageChanged)="changed($event)"
+      ></app-pagination>
     </div>
-    <app-pagination
-      [totalItems]="this.totalItems"
-      (pageChanged)="changed($event)"
-    ></app-pagination>
   `,
   styleUrls: ['./meds-list.component.scss'],
 })

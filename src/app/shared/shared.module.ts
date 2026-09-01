@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { BarchartComponent } from './components/barchart/barchart.component';
@@ -23,7 +24,7 @@ import { FormLoaderComponent } from './components/form-loader/form-loader.compon
     TableSkeletonComponent,
     FormLoaderComponent,
   ],
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   exports: [
     NavbarComponent,
     SidebarComponent,

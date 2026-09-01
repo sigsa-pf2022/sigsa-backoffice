@@ -16,7 +16,17 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
     AppRoutingModule,
     ModulesModule,
     SharedModule,
-    SweetAlert2Module.forRoot(),
+    // Defaults en un solo lugar: el resto de la UI está en español y el
+    // botón de confirmar venía con el "OK" por defecto de la librería.
+    SweetAlert2Module.forRoot({
+      provideSwal: () =>
+        import('sweetalert2').then(({ default: swal }) =>
+          swal.mixin({
+            confirmButtonText: 'Confirmar',
+            cancelButtonText: 'Cancelar',
+          }),
+        ),
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -1,39 +1,51 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-module-header',
   template: ` <div class="mh">
-    <div class="mh__content">
-      <div class="mh__content__title">
-        <h2>{{ title }}</h2>
-        <div class="d-flex gap-3">
-          <button class="btn" (click)="this.toggleFilters()">
-            <i class="bi bi-funnel fs-4"></i>
-          </button>
-          <button *ngIf="this.showCreation" class="btn btn-success" (click)="this.goToCreate()">
-            <i class="bi bi-plus fs-4"></i>
-          </button>
-        </div>
+    <div class="mh__title">
+      <h1 class="page-title">{{ title }}</h1>
+      <div class="mh__actions">
+        <button
+          type="button"
+          class="btn btn-icon btn-icon--lg"
+          [class.btn-icon--active]="this.showF"
+          (click)="this.toggleFilters()"
+          [attr.aria-pressed]="this.showF"
+          aria-label="Mostrar u ocultar filtros"
+          title="Filtros"
+        >
+          <i class="bi bi-funnel"></i>
+        </button>
+        <button
+          *ngIf="this.showCreation"
+          type="button"
+          class="btn btn-primary"
+          (click)="this.goToCreate()"
+        >
+          <i class="bi bi-plus-lg"></i>
+          Nuevo
+        </button>
       </div>
     </div>
     <ng-content></ng-content>
   </div>`,
   styleUrls: ['./module-header.component.scss'],
 })
-export class ModuleHeaderComponent implements OnInit {
+export class ModuleHeaderComponent {
   @Input() title: string = '';
   @Input() route: string = '';
   @Input() showCreation: boolean = true;
   @Output() showFilters = new EventEmitter<boolean>();
   showF = true;
-  constructor(private router: Router) {}
 
-  ngOnInit(): void {}
+  constructor(private router: Router) {}
 
   goToCreate() {
     this.router.navigateByUrl(this.route);
   }
+
   toggleFilters() {
     this.showF = !this.showF;
     this.showFilters.emit(this.showF);

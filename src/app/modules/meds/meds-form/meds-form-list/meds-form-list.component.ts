@@ -7,7 +7,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
 @Component({
   selector: 'app-meds-form-list',
   template: `
-    <div class="skeleton-container">
+    <div class="app-page">
       <app-module-header
         title="Formas"
         [route]="this.route"
@@ -58,15 +58,17 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               <tr *ngFor="let forms of this.medsForms">
                 <th scope="row">{{ forms.id }}</th>
                 <td>{{ forms.name }}</td>
-                <td
-                  [class.text-danger]="forms.deleted"
-                  [class.text-success]="!forms.deleted"
-                >
-                  {{ forms.deleted ? 'Deshabilitado' : 'Habilitado' }}
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.status-badge--danger]="forms.deleted"
+                    [class.status-badge--success]="!forms.deleted"
+                    >{{ forms.deleted ? 'Deshabilitado' : 'Habilitado' }}</span
+                  >
                 </td>
                 <td>
                   <button
-                    class="btn btn-warning me-1"
+                    class="btn-icon btn-icon--edit"
                     (click)="edit(forms.id)"
                     [disabled]="forms.deleted"
                   >
@@ -74,7 +76,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                   </button>
                   <button
                     [disabled]="forms.deleted"
-                    class="btn btn-danger"
+                    class="btn-icon btn-icon--danger"
                     [swal]="deleteSwal"
                     (confirm)="remove(forms.id)"
                   >
@@ -86,7 +88,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                     cancelButtonText="Cancelar"
                     icon="question"
                     [focusCancel]="true"
-                    confirmButtonColor="red"
+                    [customClass]="{ popup: 'swal-danger' }"
                     text="Deshabilitar {{ forms.name }}?"
                   ></swal>
                   <swal
@@ -100,16 +102,18 @@ import { MedsService } from 'src/app/services/meds/meds.service';
               </tr>
             </tbody>
           </table>
-          <h5 *ngIf="!this.loading && this.medsForms.length === 0">
-            No se encontraron formas de medicamentos con los parametros ingresados
-          </h5>
+          <div class="empty-state" *ngIf="!this.loading && this.medsForms.length === 0">
+            <div class="empty-state__icon"><i class="bi bi-droplet"></i></div>
+            <h2 class="empty-state__title">Sin resultados</h2>
+            <p class="empty-state__subtitle">No se encontraron formas de medicamentos con los parámetros ingresados</p>
+          </div>
         </div>
       </div>
+      <app-pagination
+        [totalItems]="this.totalItems"
+        (pageChanged)="changed($event)"
+      ></app-pagination>
     </div>
-    <app-pagination
-      [totalItems]="this.totalItems"
-      (pageChanged)="changed($event)"
-    ></app-pagination>
   `,
   styleUrls: ['./meds-form-list.component.scss'],
 })

@@ -1,65 +1,121 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MODULES } from '../../data/constants/modules.constant';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { Subscription, filter } from 'rxjs';
+import { MODULES, Module, Submodule } from '../../data/constants/modules.constant';
 
 @Component({
   selector: 'app-sidebar',
   template: `
-    <aside>
-      <div class="accordion accordion-flush sidebar" id="sidebar-acordion">
-        <div class="accordion-item sidebar__module" *ngFor="let module of modules">
-          <h2 class="accordion-header" id="flush-headingOne">
-            <button
-              *ngIf="this.module.submodules"
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              [attr.data-bs-target]="'#' + module.value"
-              aria-expanded="false"
-              aria-controls="flush-collapseOne"
-            >
-              {{ module.name }}
-            </button>
-            <button
-              *ngIf="!this.module.submodules"
-              class="accordion-button collapsed"
-              type="button"
-              data-bs-toggle="collapse"
-              [attr.data-bs-target]="'#' + module.value"
-              aria-expanded="false"
-              aria-controls="flush-collapseOne"
-              (click)="navigateByUrl('home')"
-            >
-              {{ module.name }}
-            </button>
-          </h2>
-          <div
-            [id]="module.value"
-            class="accordion-collapse collapse"
-            aria-labelledby="flush-headingOne"
-            data-bs-parent="#sidebar-acordion"
+    <aside class="sidebar">
+      <nav class="sidebar__nav">
+        <ng-container *ngFor="let module of modules">
+          <!-- Módulo sin submódulos: navega directo -->
+          <a
+            *ngIf="!module.submodules"
+            class="sidebar__item"
+            [class.sidebar__item--active]="isModuleActive(module)"
+            [routerLink]="'/' + module.route"
           >
-            <div
-              class="accordion-body"
-              *ngFor="let submodule of module.submodules"
-              (click)="navigateByUrl(submodule.route)"
+            <i class="bi bi-{{ module.icon }} sidebar__icon"></i>
+            <span>{{ module.name }}</span>
+          </a>
+
+          <!-- Módulo con submódulos: grupo desplegable -->
+          <div *ngIf="module.submodules" class="sidebar__group">
+            <button
+              type="button"
+              class="sidebar__item sidebar__item--group"
+              [class.sidebar__item--active]="isModuleActive(module) && !isOpen(module)"
+              [attr.aria-expanded]="isOpen(module)"
+              (click)="toggle(module)"
             >
-              {{ submodule.name }}
+              <i class="bi bi-{{ module.icon }} sidebar__icon"></i>
+              <span>{{ module.name }}</span>
+              <i
+                class="bi bi-chevron-down sidebar__chevron"
+                [class.sidebar__chevron--open]="isOpen(module)"
+              ></i>
+            </button>
+
+            <div class="sidebar__sublist" *ngIf="isOpen(module)">
+              <a
+                *ngFor="let submodule of module.submodules"
+                class="sidebar__subitem"
+                [class.sidebar__subitem--active]="activeSubmodule === submodule.value"
+                [routerLink]="'/' + submodule.route"
+              >
+                {{ submodule.name }}
+              </a>
             </div>
           </div>
-        </div>
-      </div>
+        </ng-container>
+      </nav>
     </aside>
   `,
   styleUrls: ['./sidebar.component.scss'],
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
   modules = MODULES;
+  /** `value` del submódulo que corresponde a la URL actual. */
+  activeSubmodule: string | null = null;
+  private openModules = new Set<string>();
+  private sub?: Subscription;
+
   constructor(private router: Router) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.sync(this.router.url);
+    this.sub = this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe((e) => this.sync(e.urlAfterRedirects));
+  }
 
-  navigateByUrl(value: string) {
-    this.router.navigateByUrl(value);
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
+
+  isOpen(module: Module): boolean {
+    return this.openModules.has(module.value);
+  }
+
+  isModuleActive(module: Module): boolean {
+    if (module.submodules) {
+      return module.submodules.some((s) => s.value === this.activeSubmodule);
+    }
+    return !!module.route && this.router.url.startsWith('/' + module.route);
+  }
+
+  toggle(module: Module): void {
+    if (this.openModules.has(module.value)) {
+      this.openModules.delete(module.value);
+    } else {
+      this.openModules.add(module.value);
+    }
+  }
+
+  /**
+   * Resuelve qué submódulo está activo y abre su grupo.
+   *
+   * Las rutas de alta y edición (`modules/meds/create`) no coinciden con
+   * ninguna ruta de submódulo, así que se compara contra el prefijo del listado
+   * y gana el más largo: `/modules/meds/type/create` matchea tanto
+   * `modules/meds` como `modules/meds/type`, y el correcto es el segundo.
+   */
+  private sync(url: string): void {
+    let best: { submodule: Submodule; module: Module; length: number } | null = null;
+
+    for (const module of this.modules) {
+      for (const submodule of module.submodules ?? []) {
+        const base = '/' + submodule.route.replace(/\/list$/, '');
+        if (url.startsWith(base) && (!best || base.length > best.length)) {
+          best = { submodule, module, length: base.length };
+        }
+      }
+    }
+
+    this.activeSubmodule = best?.submodule.value ?? null;
+    if (best) {
+      this.openModules.add(best.module.value);
+    }
   }
 }

@@ -1,0 +1,152 @@
+/*
+ * SweetAlert2 tematizado contra .app-modal del front: radio 24px, sombra
+ * violeta, círculo de ícono tintado y botones con el lenguaje de la app.
+ * Los templates ya no fijan confirmButtonColor inline.
+ *
+ * Todo va anidado bajo `body` a propósito: sweetalert2 inyecta su hoja de
+ * estilos en runtime (viene bundleada en dist/sweetalert2.all.js), así que a
+ * igualdad de especificidad puede ganarnos según el orden de inserción.
+ */
+
+body {
+
+.swal2-container {
+  backdrop-filter: blur(2px);
+}
+
+.swal2-popup {
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  padding: 28px 24px 24px;
+  border-radius: 24px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-modal);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.swal2-title {
+  padding: 0;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--color-text);
+}
+
+.swal2-html-container {
+  margin: 10px 0 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+}
+
+/* --- Círculo de ícono --- */
+
+.swal2-icon {
+  width: 64px;
+  height: 64px;
+  margin: 4px auto 12px;
+  border: none !important;
+  border-radius: 9999px;
+  font-size: 28px;
+
+  .swal2-icon-content {
+    font-size: 30px;
+    font-weight: 700;
+  }
+
+  &.swal2-question {
+    background: var(--sigsa-50);
+    color: var(--sigsa-700);
+  }
+
+  &.swal2-success {
+    background: #dcfce7;
+    color: #15803d;
+
+    [class^='swal2-success-line'] {
+      background-color: #15803d;
+    }
+
+    .swal2-success-ring {
+      border-color: rgba(21, 128, 61, 0.25);
+    }
+
+    [class^='swal2-success-circular-line'],
+    .swal2-success-fix {
+      background-color: transparent;
+    }
+  }
+
+  &.swal2-warning {
+    background: #fef3c7;
+    color: #b45309;
+  }
+
+  &.swal2-error {
+    background: #fee2e2;
+    color: #b91c1c;
+
+    [class^='swal2-x-mark-line'] {
+      background-color: #b91c1c;
+    }
+  }
+
+  &.swal2-info {
+    background: #e0f2fe;
+    color: #0369a1;
+  }
+}
+
+/* --- Botones --- */
+
+.swal2-actions {
+  gap: 8px;
+  margin-top: 22px;
+  width: 100%;
+}
+
+.swal2-styled {
+  min-height: 44px;
+  margin: 0;
+  padding: 12px 18px;
+  flex: 1;
+  border: none;
+  border-radius: var(--radius-button);
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: none !important;
+  transition: transform 150ms var(--ease-out-soft), background 150ms ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &:focus-visible {
+    box-shadow: var(--focus-ring) !important;
+  }
+}
+
+.swal2-styled.swal2-confirm {
+  background: var(--gradient-primary) !important;
+  color: var(--color-text-on-primary) !important;
+}
+
+.swal2-styled.swal2-cancel {
+  background: var(--color-surface-subtle) !important;
+  color: var(--color-text-secondary) !important;
+}
+
+/* Confirmación destructiva: se marca con customClass="swal-danger" */
+.swal-danger .swal2-styled.swal2-confirm {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+}
+
+.swal-danger .swal2-icon.swal2-question {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+}

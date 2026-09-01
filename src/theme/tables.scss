@@ -1,0 +1,117 @@
+/*
+ * Listados: panel de filtros + tabla.
+ *
+ * Estos estilos son globales a propósito. Las 8 páginas de listado comparten
+ * exactamente el mismo markup, así que tenerlos acá evita las 8 copias del
+ * mismo SCSS que había antes (y de paso esquiva el budget por componente).
+ */
+
+.layout {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+/* --- Panel de filtros --- */
+
+.layout .filter {
+  flex: 0 0 260px;
+  width: 260px;
+  padding: 4px 20px 8px;
+  background: var(--color-surface);
+  border: none;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+
+  h3 {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  form {
+    margin-right: 0 !important;
+  }
+}
+
+/* --- Tabla --- */
+
+.layout .table-responsive {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.table {
+  --bs-table-bg: transparent;
+  margin-bottom: 0;
+  color: var(--color-text);
+
+  /* Bootstrap mete un borde de 2px entre thead y tbody */
+  > :not(:first-child) {
+    border-top: none;
+  }
+
+  thead th {
+    padding: 14px 16px;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-hairline);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+
+  tbody tr {
+    transition: background-color 120ms ease;
+
+    &:hover {
+      background: var(--color-surface-subtle);
+    }
+  }
+
+  tbody th,
+  tbody td {
+    padding: 12px 16px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--color-hairline);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text);
+  }
+
+  /* La columna de id no debería pesar más que el contenido real */
+  tbody th[scope='row'] {
+    font-weight: 500;
+    color: var(--color-text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  tbody tr:last-child {
+    th,
+    td {
+      border-bottom: none;
+    }
+  }
+}
+
+/* Celda de acciones: los botones se agrupan y no rompen línea */
+.table td .btn-icon + .btn-icon {
+  margin-left: 4px;
+}
+
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}

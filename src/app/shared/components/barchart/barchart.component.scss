@@ -5,8 +5,11 @@
   position: relative;
 
   h5 {
-    margin: 0 0 12px;
+    margin: 0 0 16px;
+    font-size: 16px;
     font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--color-text);
   }
 
   canvas {
@@ -19,7 +22,7 @@
     align-items: center;
     justify-content: center;
     height: 240px;
-    color: #6b7280;
-    font-size: 14px;
+    color: var(--color-text-muted);
+    font-size: 13px;
   }
 }

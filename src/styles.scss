@@ -1,13 +1,23 @@
-@import './theme/buttons.scss';
-@import './theme/colors.scss';
-@import './theme/skeleton.scss';
+/*
+ * Orquestador de estilos globales.
+ *
+ * El orden importa:
+ *  1. Las variables SASS van antes de Bootstrap (si no, no lo tematizan).
+ *  2. El tema propio va después de Bootstrap, para ganar los empates de
+ *     especificidad. Antes pasaba al revés y había overrides que no aplicaban.
+ */
+
+@import './theme/bootstrap-vars';
+@import '~bootstrap/scss/bootstrap';
 @import '~bootstrap-icons/font/bootstrap-icons.css';
 
-.skeleton-container {
-  margin-left: 216px;
-  margin-top: 56px;
-}
-
-.clickable {
-  cursor: pointer;
-}
+@import './theme/tokens';
+@import './theme/base';
+@import './theme/layout';
+@import './theme/cards';
+@import './theme/tables';
+@import './theme/forms';
+@import './theme/badges';
+@import './theme/buttons';
+@import './theme/skeleton';
+@import './theme/sweetalert';

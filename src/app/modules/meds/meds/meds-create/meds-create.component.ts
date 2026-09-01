@@ -7,10 +7,11 @@ import { MedsService } from 'src/app/services/meds/meds.service';
 @Component({
   selector: 'app-meds-create',
   template: `
-    <div class="skeleton-container">
-      <h3 class="pt-4">{{ this.editMode ? 'Editar' : 'Nuevo' }} medicamento</h3>
+    <div class="app-page">
+      <h1 class="page-title">{{ this.editMode ? 'Editar' : 'Nuevo' }} medicamento</h1>
       <app-form-loader *ngIf="this.loading"></app-form-loader>
-      <form class="me-3 mt-3" [formGroup]="this.form" (ngSubmit)="onSubmit()" *ngIf="!this.loading">
+      <form class="form-card" [formGroup]="this.form" (ngSubmit)="onSubmit()" *ngIf="!this.loading">
+        <div class="form-grid">
         <div class="mb-3">
           <label for="name" class="form-label">Nombre</label>
           <input
@@ -105,15 +106,14 @@ import { MedsService } from 'src/app/services/meds/meds.service';
           </select>
         </div>
 
-        <div>
-          <button
-            class="btn btn-success me-3"
-            [disabled]="!this.form.valid"
-            type="submit"
-          >
+        </div>
+        <div class="form-card__actions">
+          <button class="btn btn-primary" [disabled]="!this.form.valid" type="submit">
             Confirmar
           </button>
-          <button class="btn btn-danger" (click)="navigate()">Cancelar</button>
+          <button class="btn btn-ghost" type="button" (click)="navigate()">
+            Cancelar
+          </button>
         </div>
       </form>
     </div>

@@ -1,22 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-navbar',
-  template: `<nav class="navbar fixed-top">
-    <div class="container-fluid">
-      <div class="d-flex align-items-center">
-        <img src="assets/logos/logo-white.svg" alt="Logo" width="30" height="24" class="d-inline-block align-text-top" />
-        <a class="navbar-brand" href="#">Sigsa Admin</a>
-      </div>
-      <div>
-        <button class="btn btn-outline-primary">Salir</button>
-      </div>
+  template: `<header class="topbar">
+    <a class="topbar__brand" routerLink="/home">
+      <img class="topbar__logo" src="assets/logos/logo.svg" alt="" aria-hidden="true" />
+      <span class="topbar__title">SIGSA <span class="topbar__title-soft">Backoffice</span></span>
+    </a>
+    <div class="topbar__actions">
+      <span class="topbar__avatar" aria-hidden="true">SA</span>
+      <button type="button" class="btn btn-ghost topbar__logout">
+        <i class="bi bi-box-arrow-right"></i>
+        Salir
+      </button>
     </div>
-  </nav>`,
+  </header>`,
   styleUrls: ['./navbar.component.scss'],
 })
-export class NavbarComponent implements OnInit {
-  constructor() {}
-
-  ngOnInit(): void {}
-}
+export class NavbarComponent {}

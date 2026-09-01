@@ -7,7 +7,7 @@ import { ProfessionalsService } from "src/app/services/professionals/professiona
 @Component({
   selector: "app-professionals-specializations",
   template: `
-    <div class="skeleton-container">
+    <div class="app-page">
       <app-module-header
         title="Especializaciones"
         [route]="this.route"
@@ -76,15 +76,17 @@ import { ProfessionalsService } from "src/app/services/professionals/professiona
                 <th scope="row">{{ specialization.id }}</th>
                 <td>{{ specialization.name }}</td>
                 <td>{{ specialization.description }}</td>
-                <td
-                  [class.text-danger]="specialization.deleted"
-                  [class.text-success]="!specialization.deleted"
-                >
-                  {{ specialization.deleted ? "Deshabilitado" : "Habilitado" }}
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.status-badge--danger]="specialization.deleted"
+                    [class.status-badge--success]="!specialization.deleted"
+                    >{{ specialization.deleted ? "Deshabilitado" : "Habilitado" }}</span
+                  >
                 </td>
                 <td>
                   <button
-                    class="btn btn-warning me-1"
+                    class="btn-icon btn-icon--edit"
                     (click)="edit(specialization.id)"
                     [disabled]="specialization.deleted"
                   >
@@ -92,7 +94,7 @@ import { ProfessionalsService } from "src/app/services/professionals/professiona
                   </button>
                   <button
                     [class.d-none]="specialization.deleted"
-                    class="btn btn-danger"
+                    class="btn-icon btn-icon--danger"
                     [swal]="deleteSwal"
                     (confirm)="remove(specialization.id)"
                   >
@@ -100,7 +102,7 @@ import { ProfessionalsService } from "src/app/services/professionals/professiona
                   </button>
                   <button
                     [class.d-none]="!specialization.deleted"
-                    class="btn btn-outline-success"
+                    class="btn-icon btn-icon--success"
                     [swal]="recoverSwal"
                     (confirm)="recover(specialization.id)"
                   >
@@ -112,7 +114,7 @@ import { ProfessionalsService } from "src/app/services/professionals/professiona
                     cancelButtonText="Cancelar"
                     icon="question"
                     [focusCancel]="true"
-                    confirmButtonColor="red"
+                    [customClass]="{ popup: 'swal-danger' }"
                     text="Deshabilitar {{ specialization.name }}?"
                   ></swal>
                   <swal
@@ -121,7 +123,6 @@ import { ProfessionalsService } from "src/app/services/professionals/professiona
                     cancelButtonText="Cancelar"
                     icon="question"
                     [focusCancel]="true"
-                    confirmButtonColor="green"
                     text="Habilitar {{ specialization.name }}?"
                   ></swal>
                   <swal
@@ -135,16 +136,18 @@ import { ProfessionalsService } from "src/app/services/professionals/professiona
               </tr>
             </tbody>
           </table>
-          <h5 *ngIf="!this.loading && this.professionalsSpecializations.length === 0">
-            No se encontraron specializaciones con los parametros ingresados
-          </h5>
+          <div class="empty-state" *ngIf="!this.loading && this.professionalsSpecializations.length === 0">
+            <div class="empty-state__icon"><i class="bi bi-mortarboard"></i></div>
+            <h2 class="empty-state__title">Sin resultados</h2>
+            <p class="empty-state__subtitle">No se encontraron especializaciones con los parámetros ingresados</p>
+          </div>
         </div>
       </div>
+      <app-pagination
+        [totalItems]="this.totalItems"
+        (pageChanged)="changed($event)"
+      ></app-pagination>
     </div>
-    <app-pagination
-      [totalItems]="this.totalItems"
-      (pageChanged)="changed($event)"
-    ></app-pagination>
   `,
   styleUrls: ["./professionals-specializations.component.scss"],
 })
