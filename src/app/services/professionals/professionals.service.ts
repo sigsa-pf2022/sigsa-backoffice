@@ -2,6 +2,18 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { listParams } from 'src/app/shared/data/filters/list-filters';
+
+export interface SpecializationsFilters {
+  name?: string | null;
+  description?: string | null;
+  deleted?: boolean | null;
+}
+
+export interface ProfessionalsFilters {
+  firstName?: string | null;
+  lastName?: string | null;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -15,32 +27,23 @@ export class ProfessionalsService {
 
   getProfessionalsSpecializations(
     page: number,
-    deleted: boolean,
-    name: string,
-    description: string
+    filters: SpecializationsFilters = {}
   ): Promise<any> {
     return firstValueFrom(
-      this.http.get<any>(
-        `${
-          environment.apiUrl
-        }/professionals/specializations?page=${page}&take=10&deleted=${
-          deleted ? 1 : 0
-        }&name=${name}&description=${description}`
-      )
+      this.http.get<any>(`${environment.apiUrl}/professionals/specializations`, {
+        params: listParams(page, { deleted: false, ...filters }),
+      })
     );
   }
 
   getProfessionals(
     page: number,
-    firstName: string,
-    lastName: string
+    filters: ProfessionalsFilters = {}
   ): Promise<any> {
     return firstValueFrom(
-      this.http.get<any>(
-        `${
-          environment.apiUrl
-        }/professionals/dashboard?page=${page}&take=10&firstName=${firstName}&lastName=${lastName}`
-      )
+      this.http.get<any>(`${environment.apiUrl}/professionals/dashboard`, {
+        params: listParams(page, filters),
+      })
     );
   }
 

@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import { MedsService } from 'src/app/services/meds/meds.service';
+import { onFiltersChange } from 'src/app/shared/data/filters/list-filters';
 
 @Component({
   selector: 'app-meds-form-list',
@@ -11,9 +12,10 @@ import { MedsService } from 'src/app/services/meds/meds.service';
       <app-module-header
         title="Formas"
         [route]="this.route"
+        (showFilters)="this.toggle($event)"
       ></app-module-header>
       <div class="layout">
-        <div class="filter">
+        <div class="filter" [class.d-none]="!this.showFilters">
           <div class="mt-3">
             <h3>Filtros</h3>
           </div>
@@ -111,6 +113,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
       </div>
       <app-pagination
         [totalItems]="this.totalItems"
+        [page]="this.page"
         (pageChanged)="changed($event)"
       ></app-pagination>
     </div>
@@ -125,9 +128,12 @@ export class MedsFormListComponent implements OnInit {
   });
   medsForms: any[] = [];
   loading = true;
-  opened = false;
+  showFilters = true;
   totalItems = 0;
+  page = 0;
   route = `/modules/meds/form/create`;
+  /** Descarta respuestas que llegan tarde si el usuario siguió tipeando. */
+  private requestId = 0;
 
   constructor(
     private medsService: MedsService,
@@ -137,21 +143,36 @@ export class MedsFormListComponent implements OnInit {
 
   ngOnInit(): void {
     this.getMedsForms();
-    this.form.valueChanges.subscribe(() => this.filter());
+    onFiltersChange(this.form.valueChanges).subscribe(() => this.filter());
   }
+
   changed(page: any) {
-    this.getMedsForms(page);
+    this.page = page;
+    this.getMedsForms();
   }
-  async getMedsForms(page: number = 0) {
+
+  /** Cambió un filtro: los resultados son otros, así que se vuelve a la página 1. */
+  filter() {
+    this.page = 0;
+    this.getMedsForms();
+  }
+
+  async getMedsForms() {
     this.loading = true;
+    const requestId = ++this.requestId;
     try {
-      const res = await this.medsService.getMedsForms(page);
+      const res = await this.medsService.getMedsForms(this.page, this.form.value);
+      if (requestId !== this.requestId) return;
       this.medsForms = res.data;
       this.totalItems = res.count;
     } catch (error) {
       console.error('MedsFormListComponent: error cargando formas', error);
+      if (requestId === this.requestId) {
+        this.medsForms = [];
+        this.totalItems = 0;
+      }
     } finally {
-      this.loading = false;
+      if (requestId === this.requestId) this.loading = false;
     }
   }
 
@@ -163,11 +184,7 @@ export class MedsFormListComponent implements OnInit {
     this.medsService.deleteMedsForm(id).then(() => this.sucessSwal.fire());
   }
 
-  openFilter() {
-    this.opened = !this.opened;
-  }
-
-  filter() {
-    console.log(this.form.value);
+  toggle(value: boolean) {
+    this.showFilters = value;
   }
 }

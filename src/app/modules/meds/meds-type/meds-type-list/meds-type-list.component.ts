@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import { MedsService } from 'src/app/services/meds/meds.service';
+import { onFiltersChange } from 'src/app/shared/data/filters/list-filters';
 
 @Component({
   selector: 'app-meds-type-list',
@@ -114,6 +115,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
       </div>
       <app-pagination
         [totalItems]="this.totalItems"
+        [page]="this.page"
         (pageChanged)="changed($event)"
       ></app-pagination>
     </div>
@@ -129,10 +131,12 @@ export class MedsTypeListComponent implements OnInit {
   });
   medsTypes: any[] = [];
   loading = true;
-  opened = false;
   showFilters = true;
   totalItems = 0;
+  page = 0;
   route = `/modules/meds/type/create`;
+  /** Descarta respuestas que llegan tarde si el usuario siguió tipeando. */
+  private requestId = 0;
 
   constructor(
     private medsService: MedsService,
@@ -142,31 +146,36 @@ export class MedsTypeListComponent implements OnInit {
 
   ngOnInit(): void {
     this.getMedsTypes();
-    this.form.valueChanges.subscribe(() => this.filter());
+    onFiltersChange(this.form.valueChanges).subscribe(() => this.filter());
   }
+
   changed(page: any) {
-    this.getMedsTypes(page);
+    this.page = page;
+    this.getMedsTypes();
   }
-  async getMedsTypes(
-    page: number = 0,
-    deleted: boolean = false,
-    name: string = '',
-    description: string = ''
-  ) {
+
+  /** Cambió un filtro: los resultados son otros, así que se vuelve a la página 1. */
+  filter() {
+    this.page = 0;
+    this.getMedsTypes();
+  }
+
+  async getMedsTypes() {
     this.loading = true;
+    const requestId = ++this.requestId;
     try {
-      const res = await this.medsService.getMedsTypes(
-        page,
-        deleted,
-        name,
-        description
-      );
+      const res = await this.medsService.getMedsTypes(this.page, this.form.value);
+      if (requestId !== this.requestId) return;
       this.medsTypes = res.data;
       this.totalItems = res.count;
     } catch (error) {
       console.error('MedsTypeListComponent: error cargando tipos', error);
+      if (requestId === this.requestId) {
+        this.medsTypes = [];
+        this.totalItems = 0;
+      }
     } finally {
-      this.loading = false;
+      if (requestId === this.requestId) this.loading = false;
     }
   }
 
@@ -176,27 +185,6 @@ export class MedsTypeListComponent implements OnInit {
 
   remove(id: number) {
     this.medsService.deleteMedsType(id).then(() => this.sucessSwal.fire());
-  }
-
-  // recover(id: number) {
-  //   this.successText = "Especializacion habilitada correctamente";
-  //   this.professionalsService
-  //     .recoverProfessionalsSpecialization(id)
-  //     .then(() => this.sucessSwal.fire())
-  //     .then(() => this.filter());
-  // }
-
-  openFilter() {
-    this.opened = !this.opened;
-  }
-
-  async filter() {
-    await this.getMedsTypes(
-      0,
-      this.form.value.deleted,
-      this.form.value.name,
-      this.form.value.description
-    );
   }
 
   toggle(value: boolean) {

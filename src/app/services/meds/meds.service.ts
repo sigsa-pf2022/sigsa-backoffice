@@ -2,6 +2,21 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { listParams } from 'src/app/shared/data/filters/list-filters';
+
+/** Filtros del catálogo: nombre + el check de "deshabilitado". */
+export interface CatalogFilters {
+  name?: string | null;
+  description?: string | null;
+  deleted?: boolean | null;
+}
+
+export interface MedsFilters extends CatalogFilters {
+  drug?: number | string | null;
+  type?: number | string | null;
+  shape?: number | string | null;
+  measurementUnit?: number | string | null;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -15,11 +30,11 @@ export class MedsService {
       this.http.get<any>(`${environment.apiUrl}/meds-shape/all`)
     );
   }
-  getMedsForms(page: number): Promise<any> {
+  getMedsForms(page: number, filters: CatalogFilters = {}): Promise<any> {
     return firstValueFrom(
-      this.http.get<any>(
-        `${environment.apiUrl}/meds-shape?page=${page}&take=10`
-      )
+      this.http.get<any>(`${environment.apiUrl}/meds-shape`, {
+        params: listParams(page, filters),
+      })
     );
   }
 
@@ -53,18 +68,11 @@ export class MedsService {
       this.http.get<any>(`${environment.apiUrl}/meds-type/all`)
     );
   }
-  getMedsTypes(
-    page: number,
-    deleted: boolean,
-    name: string,
-    description: string
-  ): Promise<any> {
+  getMedsTypes(page: number, filters: CatalogFilters = {}): Promise<any> {
     return firstValueFrom(
-      this.http.get<any>(
-        `${environment.apiUrl}/meds-type?page=${page}&take=10&deleted=${
-          deleted ? 1 : 0
-        }&name=${name}&description=${description}`
-      )
+      this.http.get<any>(`${environment.apiUrl}/meds-type`, {
+        params: listParams(page, filters),
+      })
     );
   }
 
@@ -98,9 +106,11 @@ export class MedsService {
     );
   }
 
-  getMedsDrugs(page: number): Promise<any> {
+  getMedsDrugs(page: number, filters: CatalogFilters = {}): Promise<any> {
     return firstValueFrom(
-      this.http.get<any>(`${environment.apiUrl}/meds-drug?page=${page}&take=10`)
+      this.http.get<any>(`${environment.apiUrl}/meds-drug`, {
+        params: listParams(page, filters),
+      })
     );
   }
 
@@ -133,11 +143,11 @@ export class MedsService {
       this.http.get<any>(`${environment.apiUrl}/meds-measurement-unit/all`)
     );
   }
-  getMedsMeasurements(page: number): Promise<any> {
+  getMedsMeasurements(page: number, filters: CatalogFilters = {}): Promise<any> {
     return firstValueFrom(
-      this.http.get<any>(
-        `${environment.apiUrl}/meds-measurement-unit?page=${page}&take=10`
-      )
+      this.http.get<any>(`${environment.apiUrl}/meds-measurement-unit`, {
+        params: listParams(page, filters),
+      })
     );
   }
 
@@ -169,9 +179,11 @@ export class MedsService {
 
   // MEDICAMENTOS
 
-  getMeds(page: number): Promise<any> {
+  getMeds(page: number, filters: MedsFilters = {}): Promise<any> {
     return firstValueFrom(
-      this.http.get<any>(`${environment.apiUrl}/meds?page=${page}&take=10`)
+      this.http.get<any>(`${environment.apiUrl}/meds`, {
+        params: listParams(page, filters),
+      })
     );
   }
 

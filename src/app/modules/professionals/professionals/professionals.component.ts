@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ProfessionalsService } from 'src/app/services/professionals/professionals.service';
 import { UsersService } from 'src/app/services/users/users.service';
+import { onFiltersChange } from 'src/app/shared/data/filters/list-filters';
 
 @Component({
   selector: 'app-professionals',
@@ -10,6 +11,7 @@ import { UsersService } from 'src/app/services/users/users.service';
       <app-module-header
         title="Profesionales"
         [showCreation]="false"
+        (showFilters)="toggle($event)"
       ></app-module-header>
       <div class="layout">
         <div class="filter" [class.d-none]="!this.showFilters">
@@ -69,6 +71,7 @@ import { UsersService } from 'src/app/services/users/users.service';
       </div>
       <app-pagination
         [totalItems]="this.totalItems"
+        [page]="this.page"
         (pageChanged)="changed($event)"
       ></app-pagination>
     </div>
@@ -80,10 +83,14 @@ export class ProfessionalsComponent implements OnInit {
   loading = true;
   showFilters = true;
   totalItems = 0;
+  page = 0;
   form = this.fb.group({
     firstName: '',
     lastName: '',
   });
+  /** Descarta respuestas que llegan tarde si el usuario siguió tipeando. */
+  private requestId = 0;
+
   constructor(
     private professionalsService: ProfessionalsService,
     private fb: FormBuilder
@@ -91,36 +98,40 @@ export class ProfessionalsComponent implements OnInit {
 
   ngOnInit(): void {
     this.getUsers();
+    onFiltersChange(this.form.valueChanges).subscribe(() => this.filter());
   }
+
   changed(page: any) {
-    this.getUsers(page);
+    this.page = page;
+    this.getUsers();
   }
-  async getUsers(
-    page: number = 0,
-    firstName: string = '',
-    lastName: string = ''
-  ) {
+
+  /** Cambió un filtro: los resultados son otros, así que se vuelve a la página 1. */
+  filter() {
+    this.page = 0;
+    this.getUsers();
+  }
+
+  async getUsers() {
     this.loading = true;
+    const requestId = ++this.requestId;
     try {
       const res = await this.professionalsService.getProfessionals(
-        page,
-        firstName,
-        lastName
+        this.page,
+        this.form.value
       );
+      if (requestId !== this.requestId) return;
       this.users = res.data;
-      this.totalItems = res.count;
+      this.totalItems = res.total;
     } catch (error) {
       console.error('ProfessionalsComponent: error cargando profesionales', error);
+      if (requestId === this.requestId) {
+        this.users = [];
+        this.totalItems = 0;
+      }
     } finally {
-      this.loading = false;
+      if (requestId === this.requestId) this.loading = false;
     }
-  }
-  async filter() {
-    await this.getUsers(
-      0,
-      this.form.value.firstName,
-      this.form.value.lastName,
-    );
   }
 
   toggle(value: boolean) {

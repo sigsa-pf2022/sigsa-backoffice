@@ -3,6 +3,7 @@ import { FormBuilder } from "@angular/forms";
 import { Router } from "@angular/router";
 import { SwalComponent } from "@sweetalert2/ngx-sweetalert2";
 import { ProfessionalsService } from "src/app/services/professionals/professionals.service";
+import { onFiltersChange } from "src/app/shared/data/filters/list-filters";
 
 @Component({
   selector: "app-professionals-specializations",
@@ -145,6 +146,7 @@ import { ProfessionalsService } from "src/app/services/professionals/professiona
       </div>
       <app-pagination
         [totalItems]="this.totalItems"
+        [page]="this.page"
         (pageChanged)="changed($event)"
       ></app-pagination>
     </div>
@@ -160,11 +162,14 @@ export class ProfessionalsSpecializationsComponent implements OnInit {
   });
   professionalsSpecializations: any[] = [];
   loading = true;
-  opened = false;
   totalItems = 0;
+  page = 0;
   route = `/modules/professionals/specializations/create`;
   showFilters = true;
   successText: string = "";
+  /** Descarta respuestas que llegan tarde si el usuario siguió tipeando. */
+  private requestId = 0;
+
   constructor(
     private professionalsService: ProfessionalsService,
     private router: Router,
@@ -173,36 +178,42 @@ export class ProfessionalsSpecializationsComponent implements OnInit {
 
   ngOnInit(): void {
     this.getProfessionalsSpecializations();
-    this.form.valueChanges.subscribe(() => this.filter());
+    onFiltersChange(this.form.valueChanges).subscribe(() => this.filter());
   }
+
   changed(page: any) {
-    this.getProfessionalsSpecializations(
-      page,
-      this.form.value.deleted,
-      this.form.value.name,
-      this.form.value.description
-    );
+    this.page = page;
+    this.getProfessionalsSpecializations();
   }
-  async getProfessionalsSpecializations(
-    page: number = 0,
-    deleted: boolean = false,
-    name: string = "",
-    description: string = ""
-  ) {
+
+  /** Cambió un filtro: los resultados son otros, así que se vuelve a la página 1. */
+  filter() {
+    this.page = 0;
+    this.getProfessionalsSpecializations();
+  }
+
+  async getProfessionalsSpecializations() {
     this.loading = true;
+    const requestId = ++this.requestId;
     try {
       const res = await this.professionalsService.getProfessionalsSpecializations(
-        page,
-        deleted,
-        name,
-        description
+        this.page,
+        this.form.value
       );
+      if (requestId !== this.requestId) return;
       this.professionalsSpecializations = res.data;
       this.totalItems = res.total;
     } catch (error) {
-      console.error('ProfessionalsSpecializationsComponent: error cargando especializaciones', error);
+      console.error(
+        "ProfessionalsSpecializationsComponent: error cargando especializaciones",
+        error
+      );
+      if (requestId === this.requestId) {
+        this.professionalsSpecializations = [];
+        this.totalItems = 0;
+      }
     } finally {
-      this.loading = false;
+      if (requestId === this.requestId) this.loading = false;
     }
   }
 
@@ -217,7 +228,7 @@ export class ProfessionalsSpecializationsComponent implements OnInit {
     this.professionalsService
       .deleteProfessionalsSpecialization(id)
       .then(() => this.sucessSwal.fire())
-      .then(() => this.filter());
+      .then(() => this.getProfessionalsSpecializations());
   }
 
   recover(id: number) {
@@ -225,20 +236,7 @@ export class ProfessionalsSpecializationsComponent implements OnInit {
     this.professionalsService
       .recoverProfessionalsSpecialization(id)
       .then(() => this.sucessSwal.fire())
-      .then(() => this.filter());
-  }
-
-  openFilter() {
-    this.opened = !this.opened;
-  }
-
-  async filter() {
-    await this.getProfessionalsSpecializations(
-      0,
-      this.form.value.deleted,
-      this.form.value.name,
-      this.form.value.description
-    );
+      .then(() => this.getProfessionalsSpecializations());
   }
 
   toggle(value: boolean) {

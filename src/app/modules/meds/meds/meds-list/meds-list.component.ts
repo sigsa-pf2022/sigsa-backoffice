@@ -3,6 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import { MedsService } from 'src/app/services/meds/meds.service';
+import { onFiltersChange } from 'src/app/shared/data/filters/list-filters';
 
 @Component({
   selector: 'app-meds-list',
@@ -36,6 +37,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                 aria-label="drugs"
                 formControlName="drug"
               >
+                <option value="">Todas las drogas</option>
                 <option *ngFor="let drug of this.drugs" [value]="drug.id">
                   {{ drug.name }}
                 </option>
@@ -49,6 +51,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                 aria-label="types"
                 formControlName="type"
               >
+                <option value="">Todos los tipos</option>
                 <option *ngFor="let type of this.types" [value]="type.id">
                   {{ type.name }}
                 </option>
@@ -62,6 +65,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                 aria-label="forms"
                 formControlName="shape"
               >
+                <option value="">Todas las formas</option>
                 <option *ngFor="let shape of this.shapes" [value]="shape.id">
                   {{ shape.name }}
                 </option>
@@ -77,6 +81,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
                 aria-label="measurementUnits"
                 formControlName="measurementUnit"
               >
+                <option value="">Todas las unidades</option>
                 <option
                   *ngFor="let measurementUnit of this.measurementUnits"
                   [value]="measurementUnit.id"
@@ -179,6 +184,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
       </div>
       <app-pagination
         [totalItems]="this.totalItems"
+        [page]="this.page"
         (pageChanged)="changed($event)"
       ></app-pagination>
     </div>
@@ -189,22 +195,24 @@ export class MedsListComponent implements OnInit {
   @ViewChild('successSwal') public readonly sucessSwal!: SwalComponent;
   form = this.fb.group({
     name: '',
-    type: null,
-    shape: null,
-    measurementUnit: null,
-    drug: null,
+    type: '',
+    shape: '',
+    measurementUnit: '',
+    drug: '',
     deleted: false,
   });
   meds: any[] = [];
   loading = true;
-  drugs: any[];
-  types: any[];
-  shapes: any[];
-  measurementUnits: any[];
-  opened = false;
+  drugs: any[] = [];
+  types: any[] = [];
+  shapes: any[] = [];
+  measurementUnits: any[] = [];
   showFilters = true;
   totalItems = 0;
+  page = 0;
   route = `/modules/meds/create`;
+  /** Descarta respuestas que llegan tarde si el usuario siguió tipeando. */
+  private requestId = 0;
 
   constructor(
     private medsService: MedsService,
@@ -215,23 +223,39 @@ export class MedsListComponent implements OnInit {
   ngOnInit(): void {
     this.setFiltersData();
     this.getMedsDrugs();
-    this.form.valueChanges.subscribe(() => this.filter());
+    onFiltersChange(this.form.valueChanges).subscribe(() => this.filter());
   }
+
   changed(page: any) {
-    this.getMedsDrugs(page);
+    this.page = page;
+    this.getMedsDrugs();
   }
-  async getMedsDrugs(page: number = 0) {
+
+  /** Cambió un filtro: los resultados son otros, así que se vuelve a la página 1. */
+  filter() {
+    this.page = 0;
+    this.getMedsDrugs();
+  }
+
+  async getMedsDrugs() {
     this.loading = true;
+    const requestId = ++this.requestId;
     try {
-      const res = await this.medsService.getMeds(page);
+      const res = await this.medsService.getMeds(this.page, this.form.value);
+      if (requestId !== this.requestId) return;
       this.meds = res.data;
       this.totalItems = res.count;
     } catch (error) {
       console.error('MedsListComponent: error cargando medicamentos', error);
+      if (requestId === this.requestId) {
+        this.meds = [];
+        this.totalItems = 0;
+      }
     } finally {
-      this.loading = false;
+      if (requestId === this.requestId) this.loading = false;
     }
   }
+
   async setFiltersData() {
     try {
       // Los cuatro catálogos de filtros son independientes: en paralelo los
@@ -250,28 +274,13 @@ export class MedsListComponent implements OnInit {
       console.error('MedsListComponent: error cargando los filtros', error);
     }
   }
+
   edit(id: number) {
     this.router.navigateByUrl(`modules/meds/edit/${id}`);
   }
 
   remove(id: number) {
     this.medsService.deleteMedsDrug(id).then(() => this.sucessSwal.fire());
-  }
-
-  // recover(id: number) {
-  //   this.successText = "Especializacion habilitada correctamente";
-  //   this.professionalsService
-  //     .recoverProfessionalsSpecialization(id)
-  //     .then(() => this.sucessSwal.fire())
-  //     .then(() => this.filter());
-  // }
-
-  openFilter() {
-    this.opened = !this.opened;
-  }
-
-  filter() {
-    console.log(this.form.value);
   }
 
   toggle(value: boolean) {

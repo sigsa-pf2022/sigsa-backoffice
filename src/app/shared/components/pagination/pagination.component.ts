@@ -38,8 +38,14 @@ import {
 })
 export class PaginationComponent implements OnInit, OnChanges {
   @Input() totalItems: number = 0;
+  /**
+   * Página que muestra el listado. La necesitamos porque al filtrar el listado
+   * vuelve a la primera página y el paginado tiene que acompañar: si no, seguía
+   * marcando la 3 mientras se mostraba la 1.
+   */
+  @Input() page: number = 0;
   @Output() pageChanged = new EventEmitter<number>();
-  pages: any;
+  pages: number[] = [];
   pageSelected = 0;
 
   constructor() {}
@@ -47,11 +53,14 @@ export class PaginationComponent implements OnInit, OnChanges {
   ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges) {
-    this.pages = Array(
-      Math.ceil(Number(changes['totalItems'].currentValue / 10))
-    )
-      .fill(0)
-      .map((x, i) => i);
+    if (changes['totalItems']) {
+      this.pages = Array(Math.ceil(this.totalItems / 10))
+        .fill(0)
+        .map((x, i) => i);
+    }
+    if (changes['page']) {
+      this.pageSelected = this.page;
+    }
   }
 
   changePage(page: number) {

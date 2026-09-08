@@ -3,14 +3,19 @@ import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SwalComponent } from '@sweetalert2/ngx-sweetalert2';
 import { MedsService } from 'src/app/services/meds/meds.service';
+import { onFiltersChange } from 'src/app/shared/data/filters/list-filters';
 
 @Component({
   selector: 'app-meds-drug-list',
   template: `
     <div class="app-page">
-      <app-module-header title="Drogas" [route]="this.route"></app-module-header>
+      <app-module-header
+        title="Drogas"
+        [route]="this.route"
+        (showFilters)="this.toggle($event)"
+      ></app-module-header>
       <div class="layout">
-        <div class="filter">
+        <div class="filter" [class.d-none]="!this.showFilters">
           <div class="mt-3">
             <h3>Filtros</h3>
           </div>
@@ -93,7 +98,11 @@ import { MedsService } from 'src/app/services/meds/meds.service';
           </div>
         </div>
       </div>
-      <app-pagination [totalItems]="this.totalItems" (pageChanged)="changed($event)"></app-pagination>
+      <app-pagination
+        [totalItems]="this.totalItems"
+        [page]="this.page"
+        (pageChanged)="changed($event)"
+      ></app-pagination>
     </div>
   `,
   styleUrls: ['./meds-drug-list.component.scss']
@@ -105,30 +114,52 @@ export class MedsDrugListComponent implements OnInit {
     deleted: false,
   });
   medsDrugs: any[] = [];
-  opened = false;
   loading = true;
+  showFilters = true;
   totalItems = 0;
+  page = 0;
   route = `/modules/meds/drug/create`;
+  /** Descarta respuestas que llegan tarde si el usuario siguió tipeando. */
+  private requestId = 0;
 
-  constructor(private medsService: MedsService, private router: Router, private fb: FormBuilder) {}
+  constructor(
+    private medsService: MedsService,
+    private router: Router,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit(): void {
     this.getMedsDrugs();
-    this.form.valueChanges.subscribe(() => this.filter());
+    onFiltersChange(this.form.valueChanges).subscribe(() => this.filter());
   }
+
   changed(page: any) {
-    this.getMedsDrugs(page);
+    this.page = page;
+    this.getMedsDrugs();
   }
-  async getMedsDrugs(page: number = 0) {
+
+  /** Cambió un filtro: los resultados son otros, así que se vuelve a la página 1. */
+  filter() {
+    this.page = 0;
+    this.getMedsDrugs();
+  }
+
+  async getMedsDrugs() {
     this.loading = true;
+    const requestId = ++this.requestId;
     try {
-      const res = await this.medsService.getMedsDrugs(page);
+      const res = await this.medsService.getMedsDrugs(this.page, this.form.value);
+      if (requestId !== this.requestId) return;
       this.medsDrugs = res.data;
       this.totalItems = res.count;
     } catch (error) {
       console.error('MedsDrugListComponent: error cargando drogas', error);
+      if (requestId === this.requestId) {
+        this.medsDrugs = [];
+        this.totalItems = 0;
+      }
     } finally {
-      this.loading = false;
+      if (requestId === this.requestId) this.loading = false;
     }
   }
 
@@ -140,23 +171,7 @@ export class MedsDrugListComponent implements OnInit {
     this.medsService.deleteMedsDrug(id).then(() => this.sucessSwal.fire());
   }
 
-  // recover(id: number) {
-  //   this.successText = "Especializacion habilitada correctamente";
-  //   this.professionalsService
-  //     .recoverProfessionalsSpecialization(id)
-  //     .then(() => this.sucessSwal.fire())
-  //     .then(() => this.filter());
-  // }
-
-  openFilter() {
-    this.opened = !this.opened;
+  toggle(value: boolean) {
+    this.showFilters = value;
   }
-
-  filter() {
-    console.log(this.form.value);
-  }
-
-  // toggle(value: boolean) {
-  //   this.showFilters = value;
-  // }
 }

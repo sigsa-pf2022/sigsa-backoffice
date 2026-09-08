@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { UsersService } from 'src/app/services/users/users.service';
+import { onFiltersChange } from 'src/app/shared/data/filters/list-filters';
 
 @Component({
   selector: 'app-users',
@@ -69,6 +70,7 @@ import { UsersService } from 'src/app/services/users/users.service';
       </div>
       <app-pagination
         [totalItems]="this.totalItems"
+        [page]="this.page"
         (pageChanged)="changed($event)"
       ></app-pagination>
     </div>
@@ -80,32 +82,49 @@ export class UsersComponent implements OnInit {
   loading = true;
   showFilters = true;
   totalItems = 0;
+  page = 0;
   form = this.fb.group({
     firstName: '',
     lastName: '',
   });
+  /** Descarta respuestas que llegan tarde si el usuario siguió tipeando. */
+  private requestId = 0;
+
   constructor(private usersService: UsersService, private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.getUsers();
+    onFiltersChange(this.form.valueChanges).subscribe(() => this.filter());
   }
+
   changed(page: any) {
-    this.getUsers(page);
+    this.page = page;
+    this.getUsers();
   }
-  async getUsers(page: number = 0) {
+
+  /** Cambió un filtro: los resultados son otros, así que se vuelve a la página 1. */
+  filter() {
+    this.page = 0;
+    this.getUsers();
+  }
+
+  async getUsers() {
     this.loading = true;
+    const requestId = ++this.requestId;
     try {
-      const res = await this.usersService.getUsers(page);
+      const res = await this.usersService.getUsers(this.page, this.form.value);
+      if (requestId !== this.requestId) return;
       this.users = res.data;
       this.totalItems = res.count;
     } catch (error) {
       console.error('UsersComponent: error cargando usuarios', error);
+      if (requestId === this.requestId) {
+        this.users = [];
+        this.totalItems = 0;
+      }
     } finally {
-      this.loading = false;
+      if (requestId === this.requestId) this.loading = false;
     }
-  }
-  filter() {
-    console.log(this.form.value);
   }
 
   toggle(value: boolean) {

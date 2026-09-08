@@ -72,6 +72,12 @@ export class DateRangeSelectorComponent implements OnInit {
   todayYmd = toYmd(new Date());
 
   ngOnInit(): void {
+    // El padre puede pasarnos sólo el preset, sin fechas. Si emitimos eso tal
+    // cual, la primera carga se cancela por falta de rango y el dashboard queda
+    // con todos los KPIs en "—" hasta que tocás un botón.
+    if (!this.value?.from || !this.value?.to) {
+      this.value = this.computePresetRange(this.value?.preset ?? 'month');
+    }
     // Emit initial value so parent kicks off its first load consistently.
     this.valueChange.emit(this.value);
   }
