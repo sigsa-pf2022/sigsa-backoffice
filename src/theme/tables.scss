@@ -46,7 +46,35 @@
   background: var(--color-surface);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
-  overflow: hidden;
+  /* `overflow: hidden` recortaba la última columna en las tablas anchas (el
+     catálogo de medicamentos tiene 9). En el eje horizontal va scroll; en el
+     vertical se mantiene el recorte, que es lo que respeta las esquinas
+     redondeadas de la tarjeta. */
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* En macOS la barra de scroll está oculta hasta que se arrastra, así que sin
+   esto no se nota que la tabla se puede desplazar. */
+.layout .table-responsive {
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-hairline);
+    border-radius: 4px;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background: var(--color-text-muted);
+  }
 }
 
 .table {

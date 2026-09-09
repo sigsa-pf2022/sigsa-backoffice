@@ -9,10 +9,6 @@ import { Component } from '@angular/core';
     </a>
     <div class="topbar__actions">
       <span class="topbar__avatar" aria-hidden="true">SA</span>
-      <button type="button" class="btn btn-ghost topbar__logout">
-        <i class="bi bi-box-arrow-right"></i>
-        Salir
-      </button>
     </div>
   </header>`,
   styleUrls: ['./navbar.component.scss'],
