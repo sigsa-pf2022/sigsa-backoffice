@@ -5,14 +5,18 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { ModulesModule } from './modules/modules.module';
 import { SharedModule } from './shared/shared.module';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
 import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
+import { LoginComponent } from './login/login.component';
+import { AuthInterceptor } from './shared/interceptors/auth.interceptor';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent],
+  declarations: [AppComponent, HomeComponent, LoginComponent],
   imports: [
     BrowserModule,
     HttpClientModule,
+    ReactiveFormsModule,
     AppRoutingModule,
     ModulesModule,
     SharedModule,
@@ -28,7 +32,12 @@ import { SweetAlert2Module } from '@sweetalert2/ngx-sweetalert2';
         ),
     }),
   ],
-  providers: [],
+  providers: [
+    // Agrega el token a cada llamada y cierra la sesión cuando el backend la
+    // rechaza. Va acá porque HttpClientModule se importa sólo en este módulo,
+    // así que también alcanza al módulo lazy de `modules`.
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

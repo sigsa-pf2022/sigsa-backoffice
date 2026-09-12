@@ -1,5 +1,7 @@
 <div class="app-shell">
-  <app-navbar></app-navbar>
-  <app-sidebar></app-sidebar>
+  <ng-container *ngIf="showChrome$ | async">
+    <app-navbar></app-navbar>
+    <app-sidebar></app-sidebar>
+  </ng-container>
   <router-outlet></router-outlet>
 </div>
