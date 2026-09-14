@@ -43,13 +43,20 @@ body {
 
 /* --- Círculo de ícono --- */
 
+/*
+ * OJO con el font-size: toda la geometría interna del ícono (el anillo, los
+ * dos palitos del check, las rayas de la X) está en `em` contra el font-size
+ * del propio .swal2-icon, y la caja son 5em. Fijarlo en 28px hacía que el
+ * check midiera ~82px dentro de un círculo de 64px y terminara encima del
+ * texto. El tamaño del ícono se controla desde acá: 64px / 5 = 12.8px.
+ */
 .swal2-icon {
-  width: 64px;
-  height: 64px;
+  font-size: 12.8px;
+  width: 5em;
+  height: 5em;
   margin: 4px auto 12px;
   border: none !important;
   border-radius: 9999px;
-  font-size: 28px;
 
   .swal2-icon-content {
     font-size: 30px;

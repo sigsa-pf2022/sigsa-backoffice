@@ -120,9 +120,7 @@ import { MedsService } from 'src/app/services/meds/meds.service';
     <swal
       #successSwal
       [text]="
-        'Droga del medicamento ' +
-        (editMode ? 'editada' : 'creada') +
-        ' correctamente'
+        'Medicamento ' + (editMode ? 'editado' : 'creado') + ' correctamente'
       "
       icon="success"
       (confirm)="navigate()"
