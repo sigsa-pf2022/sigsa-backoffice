@@ -38,7 +38,12 @@
       [value]="linkStatus?.total ?? null"
       [subtitle]="
         linkStatus
-          ? linkStatus.accepted + ' aceptadas / ' + linkStatus.pending + ' pendientes'
+          ? linkStatus.accepted +
+            ' aceptadas / ' +
+            linkStatus.pending +
+            ' pendientes / ' +
+            linkStatus.rejected +
+            ' rechazadas'
           : ''
       "
       [loading]="loadingLinkStatus"

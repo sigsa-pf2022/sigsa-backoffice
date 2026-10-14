@@ -30,7 +30,9 @@
     font-size: 12px;
     color: var(--color-text-secondary);
     min-height: 16px;
-    white-space: pre;
+    /* pre-wrap y no pre: conserva el ' ' de relleno pero deja que un subtítulo
+       largo (el de vinculaciones) baje de línea en vez de salirse de la tarjeta. */
+    white-space: pre-wrap;
   }
 
   /* El shimmer vive en theme/skeleton.scss (.sk-bar), compartido con las tablas. */
