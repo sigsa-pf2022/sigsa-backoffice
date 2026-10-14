@@ -7,6 +7,7 @@ import {
   EventsByPeriod,
   FamilyGroupsDistribution,
   PatientsLinkStatus,
+  TopMeds,
   TopSpecializations,
 } from '../services/analytics/analytics.service';
 import {
@@ -46,6 +47,11 @@ export class HomeComponent {
   specializationsDatasets: BarchartDataset[] = [];
   loadingSpecializations = false;
 
+  // Chart: top meds
+  topMeds: TopMeds | null = null;
+  medsDatasets: BarchartDataset[] = [];
+  loadingMeds = false;
+
   // Chart: family group distribution
   fgDistributionLabels: string[] = [];
   fgDistributionDatasets: BarchartDataset[] = [];
@@ -72,6 +78,7 @@ export class HomeComponent {
     this.loadLinkStatus();
     this.loadEvents();
     this.loadTopSpecializations();
+    this.loadTopMeds();
     this.loadFamilyGroupsDistribution();
     this.loadCareCoordination();
   }
@@ -142,6 +149,28 @@ export class HomeComponent {
         console.error('Error loading top specializations', err);
         this.specializationsDatasets = [];
         this.loadingSpecializations = false;
+      },
+    });
+  }
+
+  private loadTopMeds(): void {
+    this.loadingMeds = true;
+    this.analyticsService.getTopMeds(this.apiRange).subscribe({
+      next: (data) => {
+        this.topMeds = data;
+        this.medsDatasets = [
+          {
+            label: 'Recordatorios',
+            data: data.counts ?? [],
+            color: CHART_COLORS.medication,
+          },
+        ];
+        this.loadingMeds = false;
+      },
+      error: (err) => {
+        console.error('Error loading top meds', err);
+        this.medsDatasets = [];
+        this.loadingMeds = false;
       },
     });
   }
@@ -259,5 +288,13 @@ export class HomeComponent {
 
   get topSpecializationsTitle(): string {
     return 'Top 5 especializaciones (por turnos en el período)';
+  }
+
+  get topMedsLabels(): string[] {
+    return this.topMeds?.labels ?? [];
+  }
+
+  get topMedsTitle(): string {
+    return 'Top 5 medicamentos (por recordatorios en el período)';
   }
 }

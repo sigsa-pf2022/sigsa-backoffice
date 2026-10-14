@@ -134,6 +134,16 @@
 
     <div class="chart-card">
       <app-barchart
+        [title]="topMedsTitle"
+        [labels]="topMedsLabels"
+        [datasets]="medsDatasets"
+        [horizontal]="true"
+        [loading]="loadingMeds"
+      ></app-barchart>
+    </div>
+
+    <div class="chart-card">
+      <app-barchart
         title="Distribución de grupos familiares"
         [labels]="fgDistributionLabels"
         [datasets]="fgDistributionDatasets"

@@ -39,6 +39,12 @@ export interface TopSpecializations {
   counts: number[];
 }
 
+/** Medicamentos con más recordatorios creados en el período (top 5). */
+export interface TopMeds {
+  labels: string[];
+  counts: number[];
+}
+
 export interface FamilyGroupsDistribution {
   averageSize: number;
   distribution: { members: number; count: number }[];
@@ -101,6 +107,10 @@ export class AnalyticsService {
 
   getTopSpecializations(range: DateRange): Observable<TopSpecializations> {
     return this.http.get<TopSpecializations>(`${this.base}/top-specializations`, { params: this.params(range) });
+  }
+
+  getTopMeds(range: DateRange): Observable<TopMeds> {
+    return this.http.get<TopMeds>(`${this.base}/top-meds`, { params: this.params(range) });
   }
 
   getFamilyGroupsDistribution(range: DateRange): Observable<FamilyGroupsDistribution> {
